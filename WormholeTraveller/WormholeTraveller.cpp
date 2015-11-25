@@ -100,10 +100,6 @@ OpStatus WormholeTraveller::initApplication()
 	camera.setCamera(viewerPos, lookAt, up);
 
 	// Setup the lighting
-	//.. light.position is set in render()
-	light.ambientInt = glm::vec3(0.4f, 0.4f, 0.4f);
-	light.diffuseInt = glm::vec3(1.0f, 1.0f, 1.0f);
-	light.specularInt = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	// Setup the shader program
 	OpStatus shaderStatus = lightingShader.init();
@@ -203,23 +199,12 @@ void WormholeTraveller::render()
 	camera.getViewMatrix(&view);
 	camera.getProjectionMatrix(&projection);
 
-	light.position = view * glm::vec4(5.0f, 5.0f, 2.0f, 1.0f);
-
-	lightingShader.setLight(light);
-
 	lightingShader.useProgram(0);
 
 	for (int i = 0; i < this->worldObjects.size(); i++)
 	{
 		lightingShader.useProgram(1);
-
-		Material material;
-		material.ambientReflect = glm::vec3(0.9f, 0.5f, 0.3f);
-		material.diffuseReflect = glm::vec3(0.9f, 0.5f, 0.3f);
-		material.specularReflect = glm::vec3(0.8f, 0.8f, 0.8f);
-		material.shininess = 100.0f;
-
-		lightingShader.setMaterial(material);
+		lightingShader.setAmbientLight(glm::vec4(0.8, 0.8, 0.8, 1.0));
 
 		SceneObject* object = this->worldObjects[i];
 		
@@ -230,9 +215,9 @@ void WormholeTraveller::render()
 		glm::mat4 mv = model * view;
 		glm::mat3 mnormal = glm::mat3(vec3(mv[0]), vec3(mv[1]), vec3(mv[2]));
 
-		lightingShader.copyMatrixToShader(mv, "modelView");
-		lightingShader.copyMatrixToShader(glm::transpose(projection), "projection");
-		lightingShader.copyMatrixToShader(mnormal, "normalMatrix");
+		glm::mat4 mvp = projection * mv;
+
+		lightingShader.copyMatrixToShader(mvp, "MVPMatrix");
 
 		
 		GLenum err = GL_NO_ERROR;

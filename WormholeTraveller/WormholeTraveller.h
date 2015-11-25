@@ -68,7 +68,6 @@ public:
 private:
 	static WormholeTraveller* appinstance;
 
-	DirectionalLight light;
 	LightingShader lightingShader;
 
 	/// GLUT callback routers

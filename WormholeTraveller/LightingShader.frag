@@ -1,10 +1,14 @@
-#version 400
+#version 330 core
 
-in vec3 LightIntensity;
+in vec4 Color;
 
-layout(location = 0) out vec4 FragColor;
+out vec4 FragColor;
+
+uniform vec4 Ambient;
 
 void main()
 {
-	FragColor = vec4(LightIntensity, 1.0);
+	vec3 scatteredLight = vec3(Ambient);
+	vec3 rgb = min(Color.rgb * scatteredLight, vec3(1.0));
+	FragColor = vec4(rgb, Color.a);
 }
