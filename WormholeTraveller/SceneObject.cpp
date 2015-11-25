@@ -27,7 +27,7 @@ OpStatus SceneObject::createVao(ShaderProgram& sh, std::vector<Vertex> vertices,
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex),	vertices.data(), GL_STATIC_DRAW);
 
 	//copy the vertex position
-	location = glGetAttribLocation(sh.getProgId(), "position");
+	location = glGetAttribLocation(sh.getProgId(), "VertexPosition");
 	
 	if (location == -1) {
 		return OPS_UNIFORM_NOT_FOUND;
@@ -39,19 +39,19 @@ OpStatus SceneObject::createVao(ShaderProgram& sh, std::vector<Vertex> vertices,
 
 
 	//copy the vertex color
-	location = glGetAttribLocation(sh.getProgId(), "color");
+	//location = glGetAttribLocation(sh.getProgId(), "VertexColor");
 
-	if (location == -1) {
-		return OPS_UNIFORM_NOT_FOUND;
-	}
+	//if (location == -1) {
+	//	return OPS_UNIFORM_NOT_FOUND;
+	//}
 
-	glEnableVertexAttribArray(location);
-	glVertexAttribPointer(location, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
+	//glEnableVertexAttribArray(location);
+	//glVertexAttribPointer(location, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
 	//glDisableVertexAttribArray(location);
 
 
 	// copy the normal
-	location = glGetAttribLocation(sh.getProgId(), "normal");
+	location = glGetAttribLocation(sh.getProgId(), "VertexNormal");
 
 	if (location == -1) {
 		return OPS_UNIFORM_NOT_FOUND;
