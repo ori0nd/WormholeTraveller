@@ -84,20 +84,12 @@ OpStatus WormholeTraveller::initApplication()
 	world.setPosition(vec3(0.0f));
 
 	// Setup the camera
-	vec3 viewerPos = vec3(200, 200, 200);
-	vec3 lookAt = vec3(120, 0, 100);
+	vec3 viewerPos = vec3(0, 0, 0);
+	vec3 lookAt = vec3(40, 0, 50);
 	vec3 up = vec3(0, 1, 0);
 	
 	camera.setWindowDims(mVpWidth, mVpHeight);
 	camera.setCamera(viewerPos, lookAt, up);
-
-	// Setup the lighting
-	light.color = glm::vec3(1.0f, 1.0f, 1.0f);
-	light.direction = glm::vec3(240, 210, 200);
-	light.ambientIntensity = 0.2f;
-	light.diffuseIntensity = 0.75f;
-	light.specularIntensity = 0.85f;
-	light.specularPower = 5;
 
 	// Setup the shader program
 	OpStatus shaderStatus = lightingShader.init();
@@ -112,10 +104,10 @@ OpStatus WormholeTraveller::initApplication()
 	std::vector<unsigned int> indices;
 
 	// Earth
-	SphereObject* earth = new SphereObject(20, 10);
+	SphereObject* earth = new SphereObject(60, 30);
 	earth->computeGeometry(vertices, indices);
 	earth->createVao(lightingShader, vertices, indices);
-	earth->setInitialPosition(140, 0, 100);
+	earth->setInitialPosition(100, 0, 100);
 	earth->setInitialRotations(0, 0, 0);
 	earth->setScale(10, 10, 10);
 
@@ -178,21 +170,15 @@ void WormholeTraveller::render()
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	lightingShader.useProgram(1);
-	lightingShader.setLight(light);
-
-	glm::vec4 eye;
-	camera.getViewerPosition(&eye);
-	lightingShader.setEyePosition(eye);
 
 	for (int i = 0; i < this->worldObjects.size(); i++)
 	{
 		SceneObject* object = this->worldObjects[i];
-		
 		glm::mat4 model, view, projection;
 		
-		object->getModelTransform(&model);
-		camera.getViewMatrix(&view);
-		camera.getProjectionMatrix(&projection);
+		object->getModelTransform(&model); // model -> world
+		camera.getViewMatrix(&view);	// world -> eye
+		camera.getProjectionMatrix(&projection); // eye -> clip
 
 		glm::mat4 mv = model * view;
 
@@ -304,6 +290,7 @@ void WormholeTraveller::timerTick(int operation)
 
 OpStatus WormholeTraveller::updateWorldObjects(int frameNumber)
 {
+	this->worldObjects[0]->incrementPosition(sin((frameNumber + 100) / 75) * 3 , 0, 0 );
 	glutPostRedisplay();
 	return OPS_OK;
 }
