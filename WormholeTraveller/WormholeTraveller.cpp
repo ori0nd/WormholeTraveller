@@ -171,6 +171,16 @@ void WormholeTraveller::render()
 
 	lightingShader.useProgram(1);
 
+	//// <-->
+	GLuint loc = glGetUniformLocation(lightingShader.getProgId(), "vDiffuseMaterial");
+	glUniform3f(loc, 0.8, 0.8, 0.8);
+
+	loc = glGetUniformLocation(lightingShader.getProgId(), "vDiffuseLight");
+	glUniform3f(loc, 0.9, 0.9, 0.9);
+
+	loc = glGetUniformLocation(lightingShader.getProgId(), "vLightDir");
+	glUniform3f(loc, 50, 0, 50);
+
 	lightingShader.setAmbient(vec3(0.2f, 0.2f, 0.2f));
 
 	for (int i = 0; i < this->worldObjects.size(); i++)
@@ -292,7 +302,7 @@ void WormholeTraveller::timerTick(int operation)
 
 OpStatus WormholeTraveller::updateWorldObjects(int frameNumber)
 {
-	this->worldObjects[0]->incrementPosition(sin((frameNumber + 100) / 75) * 3 , 0, 0 );
+	//this->worldObjects[0]->incrementPosition(sin((frameNumber + 100) / 75) * 3 , 0, 0 );
 	glutPostRedisplay();
 	return OPS_OK;
 }
