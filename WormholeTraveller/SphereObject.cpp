@@ -73,7 +73,7 @@ void SphereObject::renderObject(ShaderProgram& shader) const
 {
 	glm::mat4 modelTransform;
 	this->getModelTransform(&modelTransform);
-	//shader.copyMatrixToShader(glm::transpose(modelTransform), "model");
+	shader.copyMatrixToShader(glm::transpose(modelTransform), "model");
 	glBindVertexArray(vao);
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, NULL);
 	glBindVertexArray(0);
