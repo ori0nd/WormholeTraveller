@@ -171,6 +171,8 @@ void WormholeTraveller::render()
 
 	lightingShader.useProgram(1);
 
+	lightingShader.setAmbient(vec3(0.2f, 0.2f, 0.2f));
+
 	for (int i = 0; i < this->worldObjects.size(); i++)
 	{
 		SceneObject* object = this->worldObjects[i];

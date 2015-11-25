@@ -11,9 +11,11 @@ out VS_OUT {
 uniform mat4 modelView;
 uniform mat4 projection;
 
+uniform vec3 ambient;
+
 void main(void)
 {
 	mat4 modelViewProjection = projection * modelView;
-	vs_out.color = color.xyz;
+	vs_out.color = color.xyz * ambient;
 	gl_Position = modelViewProjection * position;
 }

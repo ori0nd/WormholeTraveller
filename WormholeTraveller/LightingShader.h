@@ -20,7 +20,11 @@ public:
 
 	OpStatus init();
 
+	void setAmbient(glm::vec3 ambient);
+
 private:
+
+	GLuint uAmbient;
 
 };
 
