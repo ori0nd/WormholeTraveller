@@ -71,7 +71,6 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\Output</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -151,6 +150,7 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GeometryCommon.h" />
+    <ClInclude Include="LightingShader.h" />
     <ClInclude Include="opstatus.h" />
     <ClInclude Include="SceneObject.h" />
     <ClInclude Include="ShaderProgram.h" />
@@ -162,6 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="LightingShader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SceneObject.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
@@ -174,6 +175,12 @@
     </ClCompile>
     <ClCompile Include="World.cpp" />
     <ClCompile Include="WormholeTraveller.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="LightingShader.frag">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="LightingShader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

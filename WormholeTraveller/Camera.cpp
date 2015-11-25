@@ -101,8 +101,46 @@ void Camera::zoomIn(float zoomAmount)
 void Camera::getViewMatrix(glm::mat4 * viewMatrix)
 {
 	glm::vec3 lookAtPoint = glm::vec3(lookAtVector + position);
-	glm::mat4 cameraMatrix = glm::lookAt(glm::vec3(position), lookAtPoint, glm::vec3(upVector));
-	*viewMatrix = cameraMatrix;
+	
+	//glm::mat4 cameraMatrix;
+
+	//glm::vec4 u, v, n;
+
+	//n = position - glm::vec4(lookAtPoint, 0.0f);
+	//n.w = 0;
+	//n = glm::normalize(n);
+
+	//upVector.w = 0;
+	//upVector = glm::normalize(upVector);
+
+	//u = glm::normalize(
+	//		glm::vec4(
+	//			glm::cross(
+	//					glm::vec3(upVector.x, upVector.y, upVector.z), 
+	//					glm::vec3(n.x, n.y, n.z)
+	//				), 
+	//			0.0f
+	//		)
+	//);
+
+	//v = glm::vec4(
+	//	glm::cross(
+	//		glm::vec3(n.x, n.y, n.z),
+	//		glm::vec3(u.x, u.y, u.z)
+	//	),
+	//	0.0f
+	//);
+
+	//cameraMatrix[0] = u;
+	//cameraMatrix[1] = v;
+	//cameraMatrix[2] = n;
+	//cameraMatrix[3] = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	//cameraMatrix[0].w = glm::dot(-u, position);
+	//cameraMatrix[1].w = glm::dot(-v, position);
+	//cameraMatrix[2].w = glm::dot(-n, position);
+
+	glm::mat4 cameraMatrix = glm::lookAt(glm::vec3(position), glm::vec3(lookAtPoint), glm::vec3(upVector));
+	*viewMatrix = glm::transpose(cameraMatrix);
 }
 
 void Camera::getProjectionMatrix(glm::mat4 * projMatrix)

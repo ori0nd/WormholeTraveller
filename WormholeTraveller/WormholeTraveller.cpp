@@ -13,6 +13,10 @@ WormholeTraveller::WormholeTraveller() :
 
 WormholeTraveller::~WormholeTraveller()
 {
+	for (int i = 0; i < this->worldObjects.size(); i++)
+	{
+		delete this->worldObjects[i];
+	}
 }
 
 OpStatus WormholeTraveller::initOpenGL()
@@ -94,9 +98,9 @@ OpStatus WormholeTraveller::initApplication()
 	light.specularPower = 5;
 
 	// Setup the shader program
-	OpStatus shdaerStatus = lightingShader.init();
+	OpStatus shaderStatus = lightingShader.init();
 
-	if (OPS_FAILURE(shdaerStatus)) { return shdaerStatus; }
+	if (OPS_FAILURE(shaderStatus)) { return shaderStatus; }
 
 	lightingShader.useProgram(1);
 
@@ -106,12 +110,12 @@ OpStatus WormholeTraveller::initApplication()
 	std::vector<unsigned int> indices;
 
 	// Earth
-	SphereObject earth(20, 10);
-	earth.computeGeometry(vertices, indices);
-	earth.createVao(lightingShader, vertices, indices);
-	earth.setInitialPosition(100, 0, 100);
-	earth.setInitialRotations(0, 0, 0);
-	earth.setScale(10, 10, 10);
+	SphereObject* earth = new SphereObject(20, 10);
+	earth->computeGeometry(vertices, indices);
+	earth->createVao(lightingShader, vertices, indices);
+	earth->setInitialPosition(140, 0, 100);
+	earth->setInitialRotations(0, 0, 0);
+	earth->setScale(10, 10, 10);
 
 	this->worldObjects.push_back(earth);
 
@@ -161,7 +165,29 @@ void WormholeTraveller::render()
 	glClear(this->usedBuffersBits);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-	// draw each object in this->worldObjects vector...
+	lightingShader.useProgram(1);
+	lightingShader.setLight(light);
+
+	glm::vec4 eye;
+	camera.getViewerPosition(&eye);
+	lightingShader.setEyePosition(eye);
+
+	for (int i = 0; i < this->worldObjects.size(); i++)
+	{
+		SceneObject* object = this->worldObjects[i];
+		
+		glm::mat4 model, view, projection;
+		
+		object->getModelTransform(&model);
+		camera.getViewMatrix(&view);
+		camera.getProjectionMatrix(&projection);
+
+		glm::mat4 mvp = projection * view * model;
+
+		lightingShader.copyMatrixToShader(mvp, "modelViewProjection");
+
+		object->renderObject(lightingShader);
+	}
 
 	glutSwapBuffers();
 }

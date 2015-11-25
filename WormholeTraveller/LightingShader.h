@@ -10,6 +10,7 @@
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 typedef struct DirectionalLight {
 	
@@ -32,7 +33,7 @@ public:
 	OpStatus init();
 
 	void setLight(const DirectionalLight light);
-	void setEyePosition(const glm::vec3 pos);
+	void setEyePosition(const glm::vec4 pos);
 
 private:
 

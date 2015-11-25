@@ -9,11 +9,11 @@
 #include <iostream>
 #include <vector>
 
-#include "glew.h"
-#include "freeglut.h"
+#include <glew.h>
+#include <freeglut.h>
 
-#include "glm/mat4x4.hpp"
-#include "glm/vec3.hpp"
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
 
 #include "World.h"
 #include "Camera.h"
@@ -92,6 +92,6 @@ private:
 
 	GLbitfield usedBuffersBits;
 
-	std::vector<SceneObject&> worldObjects;
+	std::vector<SceneObject*> worldObjects;
 };
 

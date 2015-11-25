@@ -41,7 +41,7 @@ void LightingShader::setLight(const DirectionalLight light)
 	glUniform1f(this->lightSpecularPowerLoc, light.specularPower);
 }
 
-void LightingShader::setEyePosition(const glm::vec3 pos)
+void LightingShader::setEyePosition(const glm::vec4 pos)
 {
-	glUniform3f(this->eyePositionLoc, pos.x, pos.y, pos.z);
+	glUniform4f(this->eyePositionLoc, pos.x, pos.y, pos.z, pos.w);
 }
