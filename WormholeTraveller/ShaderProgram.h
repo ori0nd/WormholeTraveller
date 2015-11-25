@@ -8,7 +8,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <iostream>
 
 #include "glew.h"
 #include "glm/mat4x4.hpp"
@@ -27,7 +26,6 @@ public:
 
 	void printShaderStatus();
 	void useProgram(int useProg);
-	OpStatus copyMatrixToShader(const glm::mat3 matrix, const char * name);
 	OpStatus copyMatrixToShader(const glm::mat4 matrix, const char* name);
 
 	virtual OpStatus init() = 0;

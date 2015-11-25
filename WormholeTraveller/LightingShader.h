@@ -14,21 +14,15 @@
 
 typedef struct DirectionalLight {
 	
-	glm::vec4 position;
-	glm::vec3 ambientInt;
-	glm::vec3 diffuseInt;
-	glm::vec3 specularInt;
+	glm::vec3 color;
+	glm::vec3 direction;
+
+	float ambientIntensity;
+	float diffuseIntensity;
+	float specularIntensity;
+	float specularPower;
 
 } DirectionalLight;
-
-typedef struct Material {
-
-	glm::vec3 ambientReflect;
-	glm::vec3 diffuseReflect;
-	glm::vec3 specularReflect;
-	float shininess;
-
-} Material;
 
 class LightingShader : public ShaderProgram
 {
@@ -39,19 +33,17 @@ public:
 	OpStatus init();
 
 	void setLight(const DirectionalLight light);
-	void setMaterial(const Material material);
+	void setEyePosition(const glm::vec4 pos);
 
 private:
 
 	// Uniform locations
-	GLuint ulLightPosition;
-	GLuint ulLightAmbientInt;
-	GLuint ulLightDiffuseInt;
-	GLuint ulLightSpecularInt;
-
-	GLuint ulMatAmbientReflect;
-	GLuint ulMatDiffuseReflect;
-	GLuint ulMatSpecularReflect;
-	GLuint ulMatShininess;
+	GLuint lightColorLoc;
+	GLuint lightAmbIntensityLoc;
+	GLuint lightDiffuseIntensityLoc;
+	GLuint lightDirectionLoc;
+	GLuint lightSpecularIntensityLoc;
+	GLuint lightSpecularPowerLoc;
+	GLuint eyePositionLoc;
 };
 

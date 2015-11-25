@@ -151,7 +151,7 @@ void Camera::getViewMatrix(glm::mat4 * viewMatrix)
 void Camera::getProjectionMatrix(glm::mat4 * projMatrix)
 {
 	float aspectRatio = ((float)winWidth) / ((float)winHeight);
-	glm::mat4 projection = glm::perspective(glm::radians(this->fov), aspectRatio, 1.0f, 100.0f);
+	glm::mat4 projection = glm::perspective(glm::radians(this->fov), aspectRatio, 0.1f, 1000.0f);
 	*projMatrix = projection;
 }
 

@@ -82,23 +82,8 @@ void ShaderProgram::useProgram(int useProg)
 	}
 }
 
-OpStatus ShaderProgram::copyMatrixToShader(const glm::mat3 matrix, const char * name)
-{
-	//std::cout << "getting unf named '" << name << "'" << std::endl;
-	int uniformLoc = glGetUniformLocation(programId, name);
-
-	if (uniformLoc == -1)
-	{
-		return OPS_UNIFORM_NOT_FOUND;
-	}
-
-	glUniformMatrix3fv(uniformLoc, 1, true, glm::value_ptr(matrix));
-	return OPS_OK;
-}
-
 OpStatus ShaderProgram::copyMatrixToShader(const glm::mat4 matrix, const char * name)
 {
-	//std::cout << "getting unf named '" << name << "'" << std::endl;
 	int uniformLoc = glGetUniformLocation(programId, name);
 	
 	if (uniformLoc == -1)

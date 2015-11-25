@@ -11,8 +11,3 @@
 #include <tchar.h>
 
 #include "opstatus.h"
-
-#undef _WIN32_WINNT
-#undef WINVER
-#define _WIN32_WINNT 0x0502
-#define WINVER 0x0502

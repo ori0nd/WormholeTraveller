@@ -73,14 +73,6 @@ OpStatus WormholeTraveller::initOpenGL()
 
 	glewInit();
 
-	// Print renderer information 
-	std::cout << std::endl << " ====== RENDERER INFO ======" << std::endl;
-	std::cout << "  Vendor: " << glGetString(GL_VENDOR) << std::endl;
-	std::cout << "  Renderer: " << glGetString(GL_RENDERER) << std::endl;
-	std::cout << "  Version: " << glGetString(GL_VERSION) << std::endl;
-	std::cout << "  GLSL: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-	std::cout << " ===========================" << std::endl << std::endl;
-
 	return OPS_OK;
 }
 
@@ -92,18 +84,20 @@ OpStatus WormholeTraveller::initApplication()
 	world.setPosition(vec3(0.0f));
 
 	// Setup the camera
-	vec3 viewerPos = vec3(50, 0, 50);
-	vec3 lookAt = vec3(0, 0, 0);
+	vec3 viewerPos = vec3(200, 200, 200);
+	vec3 lookAt = vec3(120, 0, 100);
 	vec3 up = vec3(0, 1, 0);
 	
 	camera.setWindowDims(mVpWidth, mVpHeight);
 	camera.setCamera(viewerPos, lookAt, up);
 
 	// Setup the lighting
-	//.. light.position is set in render()
-	light.ambientInt = glm::vec3(0.4f, 0.4f, 0.4f);
-	light.diffuseInt = glm::vec3(1.0f, 1.0f, 1.0f);
-	light.specularInt = glm::vec3(1.0f, 1.0f, 1.0f);
+	light.color = glm::vec3(1.0f, 1.0f, 1.0f);
+	light.direction = glm::vec3(240, 210, 200);
+	light.ambientIntensity = 0.2f;
+	light.diffuseIntensity = 0.75f;
+	light.specularIntensity = 0.85f;
+	light.specularPower = 5;
 
 	// Setup the shader program
 	OpStatus shaderStatus = lightingShader.init();
@@ -118,28 +112,14 @@ OpStatus WormholeTraveller::initApplication()
 	std::vector<unsigned int> indices;
 
 	// Earth
-	SphereObject* earth = new SphereObject(200, 100);
+	SphereObject* earth = new SphereObject(20, 10);
 	earth->computeGeometry(vertices, indices);
 	earth->createVao(lightingShader, vertices, indices);
-	earth->setInitialPosition(0, 0, 0);
+	earth->setInitialPosition(140, 0, 100);
 	earth->setInitialRotations(0, 0, 0);
-	earth->setScale(25, 25, 25);
+	earth->setScale(10, 10, 10);
 
 	this->worldObjects.push_back(earth);
-	vertices.clear();
-	indices.clear();
-
-	// Wormhole 1
-	SphereObject* wh1 = new SphereObject(50, 25);
-	wh1->computeGeometry(vertices, indices);
-	wh1->createVao(lightingShader, vertices, indices);
-	wh1->setInitialPosition(0, 0, 0);
-	wh1->setInitialRotations(0, 0, 0);
-	wh1->setScale(6, 6, 6);
-
-	//this->worldObjects.push_back(wh1);
-	vertices.clear();
-	indices.clear();
 
 	return OPS_OK;
 }
@@ -194,60 +174,33 @@ void WormholeTraveller::timerTickRouter(int operation)
 void WormholeTraveller::render()
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClear(usedBuffersBits);
+	glClear(this->usedBuffersBits);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	lightingShader.useProgram(1);
-
-	glm::mat4 view, projection;
-	camera.getViewMatrix(&view);
-	camera.getProjectionMatrix(&projection);
-
-	light.position = view * glm::vec4(5.0f, 5.0f, 2.0f, 1.0f);
-
 	lightingShader.setLight(light);
 
-	lightingShader.useProgram(0);
+	glm::vec4 eye;
+	camera.getViewerPosition(&eye);
+	lightingShader.setEyePosition(eye);
 
 	for (int i = 0; i < this->worldObjects.size(); i++)
 	{
-		lightingShader.useProgram(1);
-
-		Material material;
-		material.ambientReflect = glm::vec3(0.9f, 0.5f, 0.3f);
-		material.diffuseReflect = glm::vec3(0.9f, 0.5f, 0.3f);
-		material.specularReflect = glm::vec3(0.8f, 0.8f, 0.8f);
-		material.shininess = 100.0f;
-
-		lightingShader.setMaterial(material);
-
 		SceneObject* object = this->worldObjects[i];
 		
-		glm::mat4 model;
+		glm::mat4 model, view, projection;
 		
 		object->getModelTransform(&model);
+		camera.getViewMatrix(&view);
+		camera.getProjectionMatrix(&projection);
 
 		glm::mat4 mv = model * view;
-		glm::mat3 mnormal = glm::mat3(vec3(mv[0]), vec3(mv[1]), vec3(mv[2]));
 
 		lightingShader.copyMatrixToShader(mv, "modelView");
 		lightingShader.copyMatrixToShader(glm::transpose(projection), "projection");
-		lightingShader.copyMatrixToShader(mnormal, "normalMatrix");
 
-		
-		GLenum err = GL_NO_ERROR;
-		while ((err = glGetError()) != GL_NO_ERROR)
-		{
-			fprintf_s(stderr, "ERROR");
-		}
-
-		
 		object->renderObject(lightingShader);
-		
-		lightingShader.useProgram(0);
 	}
-
-	
 
 	glutSwapBuffers();
 }
@@ -282,11 +235,6 @@ void WormholeTraveller::onKeyboard(unsigned char key, int x, int y)
 
 	case 'e':
 		camera.moveRightRelative(4.0f);
-		break;
-
-	case 'b':
-		// turn 180 degrees
-		camera.yaw(180.0);
 		break;
 
 	default:

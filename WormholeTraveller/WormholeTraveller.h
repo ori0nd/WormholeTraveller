@@ -26,9 +26,9 @@
 #define PREF_WINDOW_W			1280
 #define PREF_WINDOW_H			800
 #define PREF_WINDOW_RATE		60	// Hz
-#define PREF_GAME_MODE			false
-#define PREF_GAME_MODE_W		2880
-#define PREF_GAME_MODE_H		1800
+#define PREF_GAME_MODE			true
+#define PREF_GAME_MODE_W		1920
+#define PREF_GAME_MODE_H		1200
 #define PREF_GAME_MODE_RATE		60
 #define PREF_WINDOW_TITLE		"Wormhole Traveller"
 
