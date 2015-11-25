@@ -10,6 +10,8 @@
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+#define CAM_DEFAULT_FOV 45.0f
+
 class Camera
 {
 public:
@@ -32,6 +34,7 @@ public:
 	void yaw(float degrees);
 
 	void zoomIn(float zoomAmount);
+	void resetZoom();
 
 	void getViewMatrix(glm::mat4 * dest);
 	void getProjectionMatrix(glm::mat4 * dest);

@@ -77,8 +77,13 @@ void SceneObject::getModelTransform(glm::mat4 * dest) const
 {
 	glm::mat4 tRotate = glm::eulerAngleYXZ(yawAngle, pitchAngle, rollAngle);
 	glm::mat4 tScale = glm::scale(glm::mat4(1.0f), this->scale);
-	glm::mat4 tTranslate = glm::translate(glm::mat4(1.0f), this->position);
-	*dest = tTranslate * tRotate * tScale * glm::mat4(1.0f);
+	glm::mat4 tTranslate = glm::transpose(glm::translate(glm::mat4(1.0f), this->position));
+	glm::mat4 model = tRotate * tScale * glm::mat4(1.0f);
+	model[0].w = position.x;
+	model[1].w = position.y;
+	model[2].w = position.z;
+	model[3].w = 1.0f;
+ 	*dest = model;
 }
 
 void SceneObject::renderObject(ShaderProgram& sh) const

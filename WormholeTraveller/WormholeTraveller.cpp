@@ -66,6 +66,8 @@ OpStatus WormholeTraveller::initOpenGL()
 	glutReshapeFunc(WormholeTraveller::onViewportResizeRouter);
 	glutKeyboardFunc(WormholeTraveller::onKeyboardRouter);
 	glutSpecialFunc(WormholeTraveller::onSpecialKeyboardRouter);
+	glutMouseFunc(WormholeTraveller::onMouseRouter);
+	glutMouseWheelFunc(WormholeTraveller::onMouseWheelRouter);
 
 	glutTimerFunc(PREF_FRAME_TIME, WormholeTraveller::timerTickRouter, OP_UPDATE_OBJECTS);
 
@@ -149,6 +151,16 @@ void WormholeTraveller::onViewportResizeRouter(int newWidth, int newHeight)
 	appinstance->onViewportResize(newWidth, newHeight);
 }
 
+void WormholeTraveller::onMouseRouter(int button, int state, int x, int y)
+{
+	appinstance->onMouse(button, state, x, y);
+}
+
+void WormholeTraveller::onMouseWheelRouter(int button, int dir, int x, int y)
+{
+	appinstance->onMouseWheel(button, dir, x, y);
+}
+
 void WormholeTraveller::timerTickRouter(int operation)
 {
 	appinstance->timerTick(operation);
@@ -182,9 +194,10 @@ void WormholeTraveller::render()
 		camera.getViewMatrix(&view);
 		camera.getProjectionMatrix(&projection);
 
-		glm::mat4 mvp = projection * view * model;
+		glm::mat4 mv = model * view;
 
-		lightingShader.copyMatrixToShader(mvp, "modelViewProjection");
+		lightingShader.copyMatrixToShader(mv, "modelView");
+		lightingShader.copyMatrixToShader(glm::transpose(projection), "projection");
 
 		object->renderObject(lightingShader);
 	}
@@ -200,6 +213,30 @@ void WormholeTraveller::onKeyboard(unsigned char key, int x, int y)
 		exit(0);
 		break;
 
+	case 'w':
+		camera.moveForwardRelative(4.0f);
+		break;
+
+	case 's':
+		camera.moveForwardRelative(-4.0f);
+		break;
+
+	case 'a':
+		camera.yaw(2.0f);
+		break;
+
+	case 'd':
+		camera.yaw(-2.0f);
+		break;
+
+	case 'q':
+		camera.moveRightRelative(-4.0f);
+		break;
+
+	case 'e':
+		camera.moveRightRelative(4.0f);
+		break;
+
 	default:
 		break;
 
@@ -208,10 +245,45 @@ void WormholeTraveller::onKeyboard(unsigned char key, int x, int y)
 
 void WormholeTraveller::onSpecialKeyboard(int key, int x, int y)
 {
+	switch (key)
+	{
+	
+	case GLUT_KEY_UP:
+		camera.pitch(1.0f);
+		break;
+
+	case GLUT_KEY_DOWN:
+		camera.pitch(-1.0f);
+		break;
+
+	default:
+		break;
+
+	}
 }
 
 void WormholeTraveller::onViewportResize(int newWidth, int newHeight)
 {
+	glViewport(0, 0, newWidth, newHeight);
+	camera.setWindowDims(newWidth, newHeight);
+}
+
+void WormholeTraveller::onMouse(int button, int state, int x, int y)
+{
+	switch (button)
+	{
+	case GLUT_RIGHT_BUTTON:
+		if (state == GLUT_DOWN) { camera.resetZoom(); }
+		break;
+
+	default:
+		break;
+	}
+}
+
+void WormholeTraveller::onMouseWheel(int button, int dir, int x, int y)
+{
+	camera.zoomIn(2.0f * -dir);
 }
 
 void WormholeTraveller::timerTick(int operation)

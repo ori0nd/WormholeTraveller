@@ -8,7 +8,8 @@ out vec4 fragColor;
 out vec4 fragNormal;
 out vec3 fragPosition;
 
-uniform mat4 modelViewProjection;
+uniform mat4 modelView;
+uniform mat4 projection;
 
 void main()
 {
@@ -16,6 +17,8 @@ void main()
 	fragNormal = vec4(normal, 1.0);
 	fragPosition = position.xyz;
 	fragColor = color;
+
+	mat4 modelViewProjection = projection * modelView;
 
 	gl_Position = modelViewProjection * position;
 }

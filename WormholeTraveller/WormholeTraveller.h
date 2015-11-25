@@ -23,10 +23,10 @@
 #include "LightingShader.h"
 
 /// GLUT Window Preferences
-#define PREF_WINDOW_W			800
-#define PREF_WINDOW_H			600
+#define PREF_WINDOW_W			1280
+#define PREF_WINDOW_H			800
 #define PREF_WINDOW_RATE		60	// Hz
-#define PREF_GAME_MODE			false
+#define PREF_GAME_MODE			true
 #define PREF_GAME_MODE_W		1920
 #define PREF_GAME_MODE_H		1200
 #define PREF_GAME_MODE_RATE		60
@@ -76,6 +76,8 @@ private:
 	static void onKeyboardRouter(unsigned char key, int x, int y);
 	static void onSpecialKeyboardRouter(int key, int x, int y);
 	static void onViewportResizeRouter(int newWidth, int newHeight);
+	static void onMouseRouter(int button, int state, int x, int y);
+	static void onMouseWheelRouter(int button, int dir, int x, int y);
 	static void timerTickRouter(int operation);
 
 	/// GLUT callbacks
@@ -83,6 +85,8 @@ private:
 	void onKeyboard(unsigned char key, int x, int y);
 	void onSpecialKeyboard(int key, int x, int y);
 	void onViewportResize(int newWidth, int newHeight);
+	void onMouse(int button, int state, int x, int y);
+	void onMouseWheel(int button, int dir, int x, int y);
 	void timerTick(int operation);
 
 	OpStatus updateWorldObjects(int frameNumber);

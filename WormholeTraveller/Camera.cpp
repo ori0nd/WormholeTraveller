@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Camera.h"
 
-Camera::Camera() : winWidth(1), winHeight(1), fov(45.0f)
+Camera::Camera() : winWidth(1), winHeight(1), fov(CAM_DEFAULT_FOV)
 {
 }
 
@@ -68,7 +68,7 @@ void Camera::setOrientation(glm::vec3 position, glm::vec3 lookAtPoint, glm::vec3
 void Camera::roll(float degrees)
 {
 	glm::vec4 rotationVec = -this->lookAtVector;
-	glm::mat4 rotatiomMat = glm::rotate(glm::mat4(1.0f), degrees, glm::vec3(rotationVec));
+	glm::mat4 rotatiomMat = glm::rotate(glm::mat4(1.0f), glm::radians(degrees), glm::vec3(rotationVec));
 	glm::vec4 u = rotatiomMat * upVector;
 	this->upVector = u;
 }
@@ -78,24 +78,29 @@ void Camera::pitch(float degrees)
 	glm::vec3 lookAt3d = glm::vec3(this->lookAtVector);
 	glm::vec3 upVec3d = glm::vec3(this->upVector);
 	glm::vec3 rotationVec = glm::cross(lookAt3d, upVec3d); // aka x-axis (camera sp)
-	glm::mat4 rotatiomMat = glm::rotate(glm::mat4(1.0f), degrees, rotationVec);
+	glm::mat4 rotatiomMat = glm::rotate(glm::mat4(1.0f), glm::radians(degrees), rotationVec);
 	this->lookAtVector = glm::normalize(rotatiomMat * this->lookAtVector);
 }
 
 void Camera::yaw(float degrees)
 {
 	glm::vec3 rotationVec = glm::vec3(this->upVector);
-	glm::mat4 rotatiomMat = glm::rotate(glm::mat4(1.0f), degrees, rotationVec);
+	glm::mat4 rotatiomMat = glm::rotate(glm::mat4(1.0f), glm::radians(degrees), rotationVec);
 	this->lookAtVector = rotatiomMat * this->lookAtVector;
 }
 
 void Camera::zoomIn(float zoomAmount)
 {
 	float newFov = this->fov + zoomAmount;
-	if (newFov >= 10.0f)
+	if (newFov >= 10.0f && newFov <= 100.0f)
 	{
 		this->fov = newFov;
 	}
+}
+
+void Camera::resetZoom()
+{
+	this->fov = CAM_DEFAULT_FOV;
 }
 
 void Camera::getViewMatrix(glm::mat4 * viewMatrix)
