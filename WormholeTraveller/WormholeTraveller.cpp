@@ -170,7 +170,7 @@ void WormholeTraveller::render()
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	lightingShader.useProgram(1);
-
+	/*
 	//// <-->
 	GLuint loc = glGetUniformLocation(lightingShader.getProgId(), "vDiffuseMaterial");
 	glUniform3f(loc, 0.8, 0.8, 0.8);
@@ -181,7 +181,16 @@ void WormholeTraveller::render()
 	loc = glGetUniformLocation(lightingShader.getProgId(), "vLightDir");
 	glUniform3f(loc, 50, 0, 50);
 
-	lightingShader.setAmbient(vec3(0.2f, 0.2f, 0.2f));
+	loc = glGetUniformLocation(lightingShader.getProgId(), "vSpecularMaterial");
+	glUniform3f(loc, 0.9, 0.9, 0.9);
+
+	loc = glGetUniformLocation(lightingShader.getProgId(), "vSpecularLight");
+	glUniform3f(loc, 0.95, 0.95, 0.95);
+
+	loc = glGetUniformLocation(lightingShader.getProgId(), "fShininess");
+	glUniform1f(loc, 128.0f);
+	*/
+	//lightingShader.setAmbient(vec3(0.2f, 0.2f, 0.2f));
 
 	for (int i = 0; i < this->worldObjects.size(); i++)
 	{
@@ -195,6 +204,7 @@ void WormholeTraveller::render()
 		glm::mat4 mv = model * view;
 
 		lightingShader.copyMatrixToShader(mv, "modelView");
+		lightingShader.copyMatrixToShader(view, "view");
 		lightingShader.copyMatrixToShader(glm::transpose(projection), "projection");
 
 		object->renderObject(lightingShader);
