@@ -21,25 +21,7 @@ WormholeTraveller::~WormholeTraveller()
 
 OpStatus WormholeTraveller::initOpenGL()
 {
-	unsigned int displayModePrefs = GLUT_DOUBLE | GLUT_RGBA;
-
-	this->usedBuffersBits = GL_COLOR_BUFFER_BIT;
-
-	if (PREF_MSAA_ENABLE) {
-		glutSetOption(GLUT_MULTISAMPLE, PREF_MSAA_SAMPLES);
-		displayModePrefs = displayModePrefs | GLUT_MULTISAMPLE;
-		glEnable(GL_MULTISAMPLE);
-	}
-
-	if (PREF_DEPTHTEST_ENABLE) {
-		displayModePrefs = displayModePrefs | GLUT_DEPTH;
-		glEnable(GL_DEPTH_TEST);
-		this->usedBuffersBits |= GL_DEPTH_BUFFER_BIT;
-	}
-
-	glutInitDisplayMode(displayModePrefs);
-
-	glutInitWindowPosition(0, 0);
+	glutInitWindowPosition(100, 100);
 	glutInitWindowSize(mVpWidth, mVpHeight);
 	glutCreateWindow(PREF_WINDOW_TITLE);
 
@@ -57,10 +39,10 @@ OpStatus WormholeTraveller::initOpenGL()
 		}
 	}
 
-	if (PREF_FACECULL_ENABLE) {
-		glEnable(GL_CULL_FACE);
-		glCullFace(PREF_FACECULL_FACE);
-	}
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+
+	glEnable(GL_DEPTH_TEST);
 
 	glutDisplayFunc(WormholeTraveller::renderRouter);
 	glutReshapeFunc(WormholeTraveller::onViewportResizeRouter);
@@ -71,7 +53,9 @@ OpStatus WormholeTraveller::initOpenGL()
 
 	glutTimerFunc(PREF_FRAME_TIME, WormholeTraveller::timerTickRouter, OP_UPDATE_OBJECTS);
 
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glewInit();
+
 
 	return OPS_OK;
 }
@@ -109,9 +93,19 @@ OpStatus WormholeTraveller::initApplication()
 	earth->createVao(lightingShader, vertices, indices);
 	earth->setInitialPosition(100, 0, 100);
 	earth->setInitialRotations(0, 0, 0);
-	earth->setScale(10, 10, 10);
-
+	earth->setScale(125, 125, 125);
 	this->worldObjects.push_back(earth);
+
+	vertices.clear();
+	indices.clear();
+
+	SphereObject* wh1 = new SphereObject(60, 30);
+	wh1->computeGeometry(vertices, indices);
+	wh1->createVao(lightingShader, vertices, indices);
+	wh1->setInitialPosition(100, 250, 100);
+	wh1->setInitialRotations(0, 0, 0);
+	wh1->setScale(7, 7, 7);
+	this->worldObjects.push_back(wh1);
 
 	return OPS_OK;
 }
@@ -166,7 +160,7 @@ void WormholeTraveller::timerTickRouter(int operation)
 void WormholeTraveller::render()
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClear(this->usedBuffersBits);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	lightingShader.useProgram(1);
