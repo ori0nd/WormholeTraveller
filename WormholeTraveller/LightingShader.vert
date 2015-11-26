@@ -12,14 +12,13 @@ uniform mat4 view;
 uniform mat4 modelView;
 uniform mat4 projection;
 
-uniform vec3 ambient = vec3(0.2, 0.2, 0.2);
-
-uniform vec3 vLightDir = vec3(50, 0, 50);
-//uniform vec3 vDiffuseMaterial = vec3(0.0);
-uniform vec3 vDiffuseLight = vec3(0.6, 0.3, 0.4);
-//uniform vec3 vSpecularMaterial = vec3(0.0);
-uniform vec3 vSpecularLight = vec3(0.87, 0.93, 0.73);
-uniform float fShininess = 16.0;
+uniform vec3 ambient;
+uniform vec3 vLightDir;
+uniform vec3 vDiffuseMaterial;
+uniform vec3 vDiffuseLight;
+uniform vec3 vSpecularMaterial;
+uniform vec3 vSpecularLight;
+uniform float fShininess;
 
 void main(void)
 {
@@ -46,8 +45,8 @@ void main(void)
 	// Calculate diffuse and specular factors
 	
 	// Compute cos between the normal and the light direction, avoiding negatives
-	vec3 diffuse = max(0.0, dot(N, L)) * vDiffuseLight;
-	vec3 specular = pow(max(dot(R, V), 0.0), fShininess) * vSpecularLight;
+	vec3 diffuse = max(0.0, dot(N, L)) * vDiffuseLight * vDiffuseMaterial;
+	vec3 specular = pow(max(dot(R, V), 0.0), fShininess) * vSpecularLight * vSpecularMaterial;
 
 	vs_out.color = color.xyz
 	 * ( ambient + specular + diffuse );

@@ -170,13 +170,13 @@ void WormholeTraveller::render()
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	lightingShader.useProgram(1);
-	/*
+	
 	//// <-->
 	GLuint loc = glGetUniformLocation(lightingShader.getProgId(), "vDiffuseMaterial");
 	glUniform3f(loc, 0.8, 0.8, 0.8);
 
 	loc = glGetUniformLocation(lightingShader.getProgId(), "vDiffuseLight");
-	glUniform3f(loc, 0.9, 0.9, 0.9);
+	glUniform3f(loc, 0.6, 0.6, 0.6);
 
 	loc = glGetUniformLocation(lightingShader.getProgId(), "vLightDir");
 	glUniform3f(loc, 50, 0, 50);
@@ -188,9 +188,9 @@ void WormholeTraveller::render()
 	glUniform3f(loc, 0.95, 0.95, 0.95);
 
 	loc = glGetUniformLocation(lightingShader.getProgId(), "fShininess");
-	glUniform1f(loc, 128.0f);
-	*/
-	//lightingShader.setAmbient(vec3(0.2f, 0.2f, 0.2f));
+	glUniform1f(loc, 63.0f);
+	
+	lightingShader.setAmbient(vec3(0.2f, 0.2f, 0.2f));
 
 	for (int i = 0; i < this->worldObjects.size(); i++)
 	{
