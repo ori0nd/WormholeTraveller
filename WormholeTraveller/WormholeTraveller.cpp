@@ -20,10 +20,6 @@ WormholeTraveller::WormholeTraveller() :
 
 WormholeTraveller::~WormholeTraveller()
 {
-	for (int i = 0; i < this->worldObjects.size(); i++)
-	{
-		delete this->worldObjects[i];
-	}
 }
 
 OpStatus WormholeTraveller::initOpenGL()
@@ -84,8 +80,8 @@ OpStatus WormholeTraveller::initApplication()
 	world.setPosition(vec3(0.0f));
 
 	// Setup the camera
-	vec3 viewerPos = vec3(0, 0, 0);
-	vec3 lookAt = vec3(40, 0, 50);
+	vec3 viewerPos = vec3(-25, 0, 100);
+	vec3 lookAt = vec3(25, 0, 25);
 	vec3 up = vec3(0, 1, 0);
 	
 	camera.setWindowDims(mVpWidth, mVpHeight);
@@ -100,73 +96,45 @@ OpStatus WormholeTraveller::initApplication()
 
 	//// Create the world scene (i.e. objects)
 
-	std::vector<Vertex> vertices;
-	std::vector<unsigned int> indices;
+	vector<vec3> vertices, normals;
+	vector<vec2> uvs;
 
 	// Earth
-	SphereObject* earth = new SphereObject(60, 30);
-	earth->computeGeometry(vertices, indices);
-	earth->createVao(lightingShader, vertices, indices);
-	earth->setInitialPosition(100, 0, 100);
-	earth->setInitialRotations(0, 0, 0);
-	earth->setScale(25, 25, 25);
-	this->worldObjects.push_back(earth);
+	OpAssert(SphereObject::loadOBJ(Preferences::getModelPath("earth.obj").c_str(), 
+		vertices, uvs, normals), "cannot load model: earth.DDS");
 
-	vertices.clear();
-	indices.clear();
-
-	// Wormhole #1
-	SphereObject* wh1 = new SphereObject(60, 30);
-	wh1->computeGeometry(vertices, indices);
-	wh1->createVao(lightingShader, vertices, indices);
-	wh1->setInitialPosition(100, 250, 100);
-	wh1->setInitialRotations(0, 0, 0);
-	wh1->setScale(15, 15, 15);
-	this->worldObjects.push_back(wh1);
-
-	vertices.clear();
-	indices.clear();
-
-	//// Initialize skydome shader
-
-	//shaderStatus = skydomeShader.init();
-	//if (OPS_FAILURE(shaderStatus)) { return shaderStatus; }
+	earth.createVao(lightingShader, vertices, uvs, normals);
+	earth.setInitialPosition(0, 0, 0);
+	earth.setInitialRotations(478, 0, 0);
+	earth.setScale(25, 25, 25);
 
 
-	//// Initialize skydome texture
-	//skydomeTexture = new SkydomeTexture(
-	//	Preferences::getTexturePath("skydome/right.png"),
-	//	Preferences::getTexturePath("skydome/left.png"),
-	//	Preferences::getTexturePath("skydome/top.png"),
-	//	Preferences::getTexturePath("skydome/bottom.png"),
-	//	Preferences::getTexturePath("skydome/front.png"),
-	//	Preferences::getTexturePath("skydome/back.png")
-	//);
+	vertices.clear(); normals.clear(); uvs.clear();
 
-	//if (OPS_FAILURE(skydomeTexture->load())) { return OPS_ERROR_LOAD_TEXTURE; }
-
-	//// Skydome sphere
-
-	//skydomeSphere = new SphereObject(100, 50);
-	//skydomeSphere->computeGeometry(vertices, indices);
-	//skydomeSphere->createVao(skydomeShader, vertices, indices);
-	//skydomeSphere->setInitialPosition(viewerPos);
-	//skydomeSphere->setInitialRotations(0, 0, 0);
-	//skydomeSphere->setScale(150, 150, 150);
-
-	//vertices.clear();
-	//indices.clear();
-
-	// Earth texture
-
-	earthTexture = new Texture();
-	
-	if (OPS_FAILURE(earthTexture->loadTextures(Preferences::getTexturePath("earth.png"), GL_TEXTURE0)))
+	if (OPS_FAILURE(earthTexture.loadTexture(Preferences::getTexturePath("earth.DDS"))))
 	{
 		return OPS_ERROR_LOAD_TEXTURE;
 	}
 
-	earthTexture->setTextureSampler(lightingShader, "texSampler1", 0);
+	earthTexture.setTextureSampler(lightingShader, "texSampler1", 0);
+
+	// Moon
+	OpAssert(SphereObject::loadOBJ(Preferences::getModelPath("moon.obj").c_str(),
+		vertices, uvs, normals), "cannot load model: moon.DDS");
+
+	moon.createVao(lightingShader, vertices, uvs, normals);
+	moon.setInitialPosition(50, 0, 50);
+	moon.setInitialRotations(0, 0, 0);
+	moon.setScale(7, 7, 7);
+
+	vertices.clear(); normals.clear(); uvs.clear();
+
+	if (OPS_FAILURE(moonTexture.loadTexture(Preferences::getTexturePath("moon.DDS"))))
+	{
+		return OPS_ERROR_LOAD_TEXTURE;
+	}
+
+	moonTexture.setTextureSampler(lightingShader, "texSampler1", 0);
 
 	return OPS_OK;
 }
@@ -236,48 +204,56 @@ void WormholeTraveller::render()
 
 	lightingShader.useProgram(1);
 	
-	//// <-->
-	GLuint loc = glGetUniformLocation(lightingShader.getProgId(), "vDiffuseMaterial");
-	glUniform3f(loc, 0.8, 0.8, 0.8);
 
-	loc = glGetUniformLocation(lightingShader.getProgId(), "vDiffuseLight");
-	glUniform3f(loc, 0.6, 0.6, 0.6);
-
-	loc = glGetUniformLocation(lightingShader.getProgId(), "vLightDir");
-	glUniform3f(loc, 50, 0, 50);
-
-	loc = glGetUniformLocation(lightingShader.getProgId(), "vSpecularMaterial");
-	glUniform3f(loc, 0.9, 0.9, 0.9);
-
-	loc = glGetUniformLocation(lightingShader.getProgId(), "vSpecularLight");
-	glUniform3f(loc, 0.95, 0.95, 0.95);
-
-	loc = glGetUniformLocation(lightingShader.getProgId(), "fShininess");
-	glUniform1f(loc, 63.0f);
+	DirectionalLight light;
+	light.direction = -vec3(25, 0, 50);
+	light.ambient = vec3(0.2f, 0.2f, 0.2f);
+	light.diffuse = vec3(0.7f, 0.7f, 0.65f);
+	light.specular = vec3(0.92f, 0.92f, 0.92f);
 	
-	lightingShader.setAmbient(vec3(0.2f, 0.2f, 0.2f));
+	Material mat1, mat2;
+	mat1.diffuse = vec3(0.8f, 0.8f, 0.8f);
+	mat1.specular = vec3(0.95f, 0.95f, 0.95f);
+	mat1.shininess = 2.0f;
+
+	mat2.diffuse = vec3(0.6f, 0.6f, 0.6f);
+	mat2.specular = vec3(0.8f, 0.8f, 0.8f);
+	mat2.shininess = 2.0f;
+
+	lightingShader.setLight(light);
 
 	glm::mat4 model, view, projection;
 
 	camera.getViewMatrix(&view);	// world -> eye
 	camera.getProjectionMatrix(&projection); // eye -> clip
 
-	for (int i = 0; i < this->worldObjects.size(); i++)
-	{
-		earthTexture->bindToTextureUnit(0);
-		
-		SceneObject* object = this->worldObjects[i];
-		
-		object->getModelTransform(&model); // model -> world
+	// draw earth
+	lightingShader.setMaterial(mat1);
 
-		glm::mat4 mv = model * view;
+	earthTexture.bindToTextureUnit(GL_TEXTURE0);
+	earth.getModelTransform(&model);
 
-		lightingShader.copyMatrixToShader(mv, "modelView");
-		lightingShader.copyMatrixToShader(view, "view");
-		lightingShader.copyMatrixToShader(glm::transpose(projection), "projection");
+	mat4 mv = model * view;
 
-		object->renderObject(lightingShader);
-	}
+	lightingShader.copyMatrixToShader(mv, "modelView");
+	lightingShader.copyMatrixToShader(view, "view");
+	lightingShader.copyMatrixToShader(glm::transpose(projection), "projection");
+
+	earth.renderObject();
+
+	//draw moon
+	lightingShader.setMaterial(mat2);
+	moonTexture.bindToTextureUnit(GL_TEXTURE0);
+	moon.getModelTransform(&model);
+
+	mv = model * view;
+
+	lightingShader.copyMatrixToShader(mv, "modelView");
+	lightingShader.copyMatrixToShader(view, "view");
+	lightingShader.copyMatrixToShader(glm::transpose(projection), "projection");
+
+	moon.renderObject();
+
 
 	lightingShader.useProgram(0);
 
@@ -387,6 +363,14 @@ void WormholeTraveller::onSpecialKeyboard(int key, int x, int y)
 		states[GS_PITCH_DOWN] = GS_ON;
 		break;
 
+	case GLUT_KEY_LEFT:
+		states[GS_ROLL_LEFT] = GS_ON;
+		break;
+
+	case GLUT_KEY_RIGHT:
+		states[GS_ROLL_RIGHT] = GS_ON;
+		break;
+
 	default:
 		break;
 
@@ -404,6 +388,14 @@ void WormholeTraveller::onSpecialKeyboardUp(int key, int x, int y)
 
 	case GLUT_KEY_DOWN:
 		states[GS_PITCH_DOWN] = GS_OFF;
+		break;
+
+	case GLUT_KEY_LEFT:
+		states[GS_ROLL_LEFT] = GS_OFF;
+		break;
+
+	case GLUT_KEY_RIGHT:
+		states[GS_ROLL_RIGHT] = GS_OFF;
 		break;
 
 	default:
@@ -458,6 +450,15 @@ OpStatus WormholeTraveller::updateWorldObjects(int frameNumber)
 		//cout << "Speed: " << travelSpeed << " Acceleration: " << travelAcceleration << endl;
 	}
 
+	vec3 moonPos = moon.getPosition();
+	float angle = 0.007f;
+	float newX = moonPos.x * cos(angle) - moonPos.z * sin(angle);
+	float newZ = moonPos.x * sin(angle) + moonPos.z * cos(angle);
+	moon.setInitialPosition(vec3(newX, moonPos.y, newZ));
+
+	earth.incrementRotations(0.0f, 0.0f, 0.02f);
+	moon.incrementRotations(0.0f, 0.0f, 0.015f);
+
 	// Move forward for the value of current speed
 	prevFrameSpeed = travelSpeed;
 	travelSpeed += travelAcceleration;
@@ -490,8 +491,8 @@ void WormholeTraveller::executeStateHandler(GameState state)
 		reverse = travelSpeed < 0.0;
 		delta = reverse ? decelerationUPF : accelerationUPF;
 		changeTravelAcceleration(delta);
-		if (reverse) { cout << "[REVERSE] "; }
-		cout << "[UP] accelerating: " << travelSpeed + delta << " (by delta " << delta << ")" << endl;
+		//if (reverse) { cout << "[REVERSE] "; }
+		//cout << "[UP] accelerating: " << travelSpeed + delta << " (by delta " << delta << ")" << endl;
 
 		break;
 
@@ -501,8 +502,8 @@ void WormholeTraveller::executeStateHandler(GameState state)
 		reverse = travelSpeed < 0.0;
 		delta = reverse ? -accelerationUPF : -decelerationUPF;
 		changeTravelAcceleration(delta);
-		if (reverse) { cout << "[REVERSE] "; }
-		cout << "[DOWN] decelerating: " << travelSpeed + delta << " (by delta " << delta << ")" << endl;
+		//if (reverse) { cout << "[REVERSE] "; }
+		//cout << "[DOWN] decelerating: " << travelSpeed + delta << " (by delta " << delta << ")" << endl;
 		break;
 
 	case GS_MOVE_LEFT:
@@ -514,11 +515,19 @@ void WormholeTraveller::executeStateHandler(GameState state)
 		break;
 
 	case GS_PITCH_UP:
-		camera.pitch(1.0f);
+		camera.pitch(0.75f);
 		break;
 
 	case GS_PITCH_DOWN:
-		camera.pitch(-1.0f);
+		camera.pitch(-0.75f);
+		break;
+
+	case GS_ROLL_LEFT:
+		camera.roll(1.0f);
+		break;
+
+	case GS_ROLL_RIGHT:
+		camera.roll(-1.0f);
 		break;
 
 	default:
@@ -534,7 +543,6 @@ void WormholeTraveller::changeTravelAcceleration(double delta)
 	if (cooldownEndFrame > 0 && mFramesRenderred < cooldownEndFrame)
 	{
 		// we're on cooldown -> noop
-		cout << "COOLDOWN" << endl;
 		return;
 	} 
 	else if (cooldownEndFrame > 0 && mFramesRenderred >= cooldownEndFrame)
@@ -580,7 +588,7 @@ void WormholeTraveller::changeTravelAcceleration(double delta)
 			travelAcceleration += delta;
 		}
 		else {
-			cout << " >>> TOP SPEED <<< " << endl;
+			
 		}
 	
 }

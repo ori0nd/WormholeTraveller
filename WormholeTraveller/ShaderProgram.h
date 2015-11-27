@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 
 #include "glew.h"
 #include "glm/mat4x4.hpp"

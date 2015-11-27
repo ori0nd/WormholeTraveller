@@ -22,6 +22,9 @@
     <Filter Include="Resource Files\Textures\Skydome">
       <UniqueIdentifier>{8cc3a643-cac2-40d8-b506-51c7b90fd19f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Models">
+      <UniqueIdentifier>{8984a29d-7047-4976-80b2-39dd2b2a5c6f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -52,9 +55,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GeometryCommon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SphereObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LightingShader.h">
@@ -93,9 +93,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ShaderProgram.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SphereObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="LightingShader.cpp">
@@ -147,5 +144,6 @@
     <None Include="Shaders\Skydome.vert">
       <Filter>Source Files\Shaders</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

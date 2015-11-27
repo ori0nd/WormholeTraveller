@@ -41,6 +41,8 @@ enum GameState
 	GS_MOVE_RIGHT,
 	GS_PITCH_UP,
 	GS_PITCH_DOWN,
+	GS_ROLL_LEFT,
+	GS_ROLL_RIGHT,
 	GS_NUM_STATES // should be the last one
 };
 
@@ -68,7 +70,6 @@ private:
 	SkydomeShader skydomeShader;
 
 	SkydomeTexture * skydomeTexture;
-	Texture * earthTexture;
 
 	GLuint sampler;
 
@@ -115,7 +116,10 @@ private:
 
 	GLbitfield usedBuffersBits;
 
-	std::vector<SceneObject*> worldObjects;
-	SphereObject* skydomeSphere;
+	SceneObject earth;
+	SceneObject moon;
+
+	Texture earthTexture;
+	Texture moonTexture;
 };
 

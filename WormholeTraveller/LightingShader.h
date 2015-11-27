@@ -15,6 +15,24 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
+using namespace std;
+using namespace glm;
+
+typedef struct DirectionalLight
+{
+	vec3 direction;
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+};
+
+typedef struct Material
+{
+	vec3 diffuse;
+	vec3 specular;
+	float shininess;
+};
+
 class LightingShader : public ShaderProgram
 {
 public:
@@ -23,12 +41,21 @@ public:
 
 	OpStatus init();
 
-	void setAmbient(glm::vec3 ambient);
+	void setLight(const DirectionalLight& light);
+	void setMaterial(const Material& material);
 	GLuint getTexSampler();
 
 private:
 
+	GLuint uDirection;
 	GLuint uAmbient;
+	GLuint uDiffuseLight;
+	GLuint uSpecularLight;
+
+	GLuint uDiffuseMaterial;
+	GLuint uSpecularMaterial;
+	GLuint uShininess;
+
 	GLuint uSampler;
 
 };

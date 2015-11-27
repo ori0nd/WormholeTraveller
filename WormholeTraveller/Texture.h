@@ -22,7 +22,7 @@ public:
 	Texture();
 	virtual ~Texture();
 
-	OpStatus loadTextures(const string& filename, GLuint texTarget);
+	OpStatus loadTexture(const string& filename);
 	void bindToTextureUnit(int textureUnit);
 	void setTextureSampler(ShaderProgram& sh, const char * sampleName, GLuint samplerId);
 
