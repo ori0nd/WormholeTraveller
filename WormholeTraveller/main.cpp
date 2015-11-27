@@ -18,6 +18,7 @@ int main(int argc, char** argv)
 
 	glutInit(&argc, argv);
 
+
 	status = application.initOpenGL();
 	OpAssert(status, "Cannot initialize OpenGL");
 

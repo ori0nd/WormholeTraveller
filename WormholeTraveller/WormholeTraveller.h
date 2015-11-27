@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <vector>
+#include <string>
 
 #include <glew.h>
 #include <freeglut.h>
@@ -21,35 +22,30 @@
 #include "SphereObject.h"
 
 #include "LightingShader.h"
+#include "SkydomeShader.h"
 
-/// GLUT Window Preferences
-#define PREF_WINDOW_W			1280
-#define PREF_WINDOW_H			800
-#define PREF_WINDOW_RATE		60	// Hz
-#define PREF_GAME_MODE			false
-#define PREF_GAME_MODE_W		1920
-#define PREF_GAME_MODE_H		1200
-#define PREF_GAME_MODE_RATE		60
-#define PREF_WINDOW_TITLE		"Wormhole Traveller"
+#include "Texture.h"
+#include "SkydomeTexture.h"
 
-/// MSAA Preferences
-#define PREF_MSAA_ENABLE		true
-#define PREF_MSAA_SAMPLES		16
-
-/// z-buffering preferences
-#define PREF_DEPTHTEST_ENABLE	true
-
-/// Face culling preferences
-#define PREF_FACECULL_ENABLE	true
-#define PREF_FACECULL_FACE		GL_BACK
-
-/// Performance preferences
-#define PREF_FRAME_TIME			15
-
-/// Operation defs
-#define OP_UPDATE_OBJECTS		0x1000
+#include "prefdefs.h"
 
 using namespace glm;
+using namespace std;
+
+enum GameState
+{
+	GS_STAYIDLE,
+	GS_ACCEL_FORWARD,
+	GS_ACCEL_BACKWARD,
+	GS_MOVE_LEFT,
+	GS_MOVE_RIGHT,
+	GS_PITCH_UP,
+	GS_PITCH_DOWN,
+	GS_NUM_STATES // should be the last one
+};
+
+#define GS_ON	(GameState)(GS_NUM_STATES + 1)
+#define GS_OFF	(GameState)(GS_NUM_STATES + 2)
 
 class WormholeTraveller
 {
@@ -69,11 +65,27 @@ private:
 	static WormholeTraveller* appinstance;
 
 	LightingShader lightingShader;
+	SkydomeShader skydomeShader;
+
+	SkydomeTexture * skydomeTexture;
+	Texture * earthTexture;
+
+	GLuint sampler;
+
+	vector<GameState> states;
+	void WormholeTraveller::executeStateHandler(GameState state);
+
+	double travelSpeed;
+	double travelAcceleration;
+
+	double prevFrameSpeed;
 
 	/// GLUT callback routers
 	static void renderRouter();
 	static void onKeyboardRouter(unsigned char key, int x, int y);
 	static void onSpecialKeyboardRouter(int key, int x, int y);
+	static void onKeyboardUpRouter(unsigned char key, int x, int y);
+	static void onSpecialKeyboardUpRouter(int key, int x, int y);
 	static void onViewportResizeRouter(int newWidth, int newHeight);
 	static void onMouseRouter(int button, int state, int x, int y);
 	static void onMouseWheelRouter(int button, int dir, int x, int y);
@@ -83,6 +95,8 @@ private:
 	void render();
 	void onKeyboard(unsigned char key, int x, int y);
 	void onSpecialKeyboard(int key, int x, int y);
+	void onSpecialKeyboardUp(int key, int x, int y);
+	void onKeyboardUp(unsigned char key, int x, int y);
 	void onViewportResize(int newWidth, int newHeight);
 	void onMouse(int button, int state, int x, int y);
 	void onMouseWheel(int button, int dir, int x, int y);
@@ -90,11 +104,18 @@ private:
 
 	OpStatus updateWorldObjects(int frameNumber);
 
+	void changeTravelAcceleration(double delta);
+
 	int mVpWidth, mVpHeight;
 	int mFramesRenderred;
+
+	int cooldownEndFrame;
+
+	double accelerationUPF, decelerationUPF; // units per frame
 
 	GLbitfield usedBuffersBits;
 
 	std::vector<SceneObject*> worldObjects;
+	SphereObject* skydomeSphere;
 };
 

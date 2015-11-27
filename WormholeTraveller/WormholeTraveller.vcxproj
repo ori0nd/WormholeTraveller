@@ -71,6 +71,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\Build</OutDir>
+    <CustomBuildAfterTargets>
+    </CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -94,8 +97,27 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\Users\ori0n\gl\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>freeglut.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freeglut.lib;glew32.lib;SOIL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d /e "$(SolutionDir)Textures" "$(OutDir)textures"
+xcopy /y /d /e "$(MSBuildProjectDirectory)\Shaders" "$(OutDir)renderprogs"</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copy resource to output directory</Message>
+    </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>IF not exist "$(OutDir)renderprogs" (mkdir "$(OutDir)renderprogs")
+IF not exist "$(OutDir)textures" (mkdir "$(OutDir)textures")</Command>
+    </PreLinkEvent>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>
+      </Message>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -150,13 +172,17 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GeometryCommon.h" />
+    <ClInclude Include="prefdefs.h" />
     <ClInclude Include="LightingShader.h" />
     <ClInclude Include="opstatus.h" />
     <ClInclude Include="SceneObject.h" />
     <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="SkydomeShader.h" />
+    <ClInclude Include="SkydomeTexture.h" />
     <ClInclude Include="SphereObject.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="World.h" />
     <ClInclude Include="WormholeTraveller.h" />
   </ItemGroup>
@@ -166,6 +192,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SceneObject.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="SkydomeShader.cpp" />
+    <ClCompile Include="SkydomeTexture.cpp" />
     <ClCompile Include="SphereObject.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -173,14 +201,24 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="World.cpp" />
     <ClCompile Include="WormholeTraveller.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="LightingShader.frag">
-      <FileType>CppCode</FileType>
-    </None>
-    <None Include="LightingShader.vert" />
+    <Image Include="..\Textures\earth.png" />
+    <Image Include="..\Textures\skydome\back.png" />
+    <Image Include="..\Textures\skydome\bottom.png" />
+    <Image Include="..\Textures\skydome\front.png" />
+    <Image Include="..\Textures\skydome\left.png" />
+    <Image Include="..\Textures\skydome\right.png" />
+    <Image Include="..\Textures\skydome\top.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\LightingShader.frag" />
+    <None Include="Shaders\LightingShader.vert" />
+    <None Include="Shaders\Skydome.frag" />
+    <None Include="Shaders\Skydome.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

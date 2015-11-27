@@ -19,6 +19,7 @@
 #define OPS_ERR_SHADER_ATTACH		0x103
 #define OPS_ERR_SHADER_LINK			0x104
 #define OPS_UNIFORM_NOT_FOUND		0x105
+#define OPS_ERROR_LOAD_TEXTURE		0x106
 
 #define OPS_SUCCESS(X) ((X) <= 0)
 #define OPS_FAILURE(X) ((X) > 0)

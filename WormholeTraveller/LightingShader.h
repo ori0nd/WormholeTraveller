@@ -7,6 +7,9 @@
 #pragma once
 
 #include "ShaderProgram.h"
+#include "prefdefs.h"
+
+#include <string>
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
@@ -21,10 +24,12 @@ public:
 	OpStatus init();
 
 	void setAmbient(glm::vec3 ambient);
+	GLuint getTexSampler();
 
 private:
 
 	GLuint uAmbient;
+	GLuint uSampler;
 
 };
 

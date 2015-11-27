@@ -11,25 +11,32 @@ ShaderProgram::~ShaderProgram()
 {
 }
 
-OpStatus ShaderProgram::createShaderProgram(char * vShFilename, char * fShFilename)
+OpStatus ShaderProgram::createShaderProgram(const char * vShFilename, const char * fShFilename)
 {
 	OpStatus s;
 
 	s = createShaderObject(vShFilename, GL_VERTEX_SHADER, &vShId);
-	OpAssert(s, "Can't create vertex shader object");
+	if (OPS_FAILURE(s)) {
+		fprintf_s(stderr, "Cannot find shader source: %s\n", vShFilename);
+		return s;
+	}
 
 	s = createShaderObject(fShFilename, GL_FRAGMENT_SHADER, &fShId);
-	OpAssert(s, "Can't create fragment shader object");
+	if (OPS_FAILURE(s)) {
+		fprintf_s(stderr, "Cannot find shader source: %s\n", fShFilename);
+		return s;
+	}
 
 	s = createShaderProgram(vShId, fShId, &programId);
 	return s;
 }
 
-OpStatus ShaderProgram::createShaderProgram(char * vShFilename, char * fShFilename, char * gShFilename)
-{
-	fprintf(stderr, "!!! ShaderProgram::createShaderProgram() IS NOT IMPLEMENTED\n");
-	return OPS_NOK;
-}
+//
+//OpStatus ShaderProgram::createShaderProgram(char * vShFilename, char * fShFilename, char * gShFilename)
+//{
+//	fprintf(stderr, "!!! ShaderProgram::createShaderProgram() IS NOT IMPLEMENTED\n");
+//	return OPS_NOK;
+//}
 
 void ShaderProgram::printShaderStatus()
 {
@@ -95,7 +102,7 @@ OpStatus ShaderProgram::copyMatrixToShader(const glm::mat4 matrix, const char * 
 	return OPS_OK;
 }
 
-char * ShaderProgram::readCode(char * fname)
+char * ShaderProgram::readCode(const char * fname)
 {
 	char * shaderCode = NULL;
 	int codeLength = 0;
@@ -125,7 +132,7 @@ char * ShaderProgram::readCode(char * fname)
 	return shaderCode;
 }
 
-OpStatus ShaderProgram::createShaderObject(char * fname, int type, GLuint * shaderId)
+OpStatus ShaderProgram::createShaderObject(const char * fname, int type, GLuint * shaderId)
 {
 	char *code = NULL;
 	OpStatus status = OPS_OK;
@@ -223,8 +230,8 @@ OpStatus ShaderProgram::createShaderProgram(GLint vSh, GLint fSh, GLuint * progI
 	return status;
 }
 
-OpStatus ShaderProgram::createShaderProgram(GLint vSh, GLint fSh, GLint gSh, GLuint * progId)
-{
-	fprintf(stderr, "!!! ShaderProgram::createShaderProgram() IS NOT IMPLEMENTED\n");
-	return OPS_NOK;
-}
+//OpStatus ShaderProgram::createShaderProgram(GLint vSh, GLint fSh, GLint gSh, GLuint * progId)
+//{
+//	fprintf(stderr, "!!! ShaderProgram::createShaderProgram() IS NOT IMPLEMENTED\n");
+//	return OPS_NOK;
+//}

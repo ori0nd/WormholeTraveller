@@ -38,6 +38,7 @@ OpStatus SceneObject::createVao(ShaderProgram& sh, std::vector<Vertex> vertices,
 	//glDisableVertexAttribArray(location);
 
 
+	/*
 	//copy the vertex color
 	location = glGetAttribLocation(sh.getProgId(), "color");
 
@@ -48,7 +49,7 @@ OpStatus SceneObject::createVao(ShaderProgram& sh, std::vector<Vertex> vertices,
 	glEnableVertexAttribArray(location);
 	glVertexAttribPointer(location, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
 	//glDisableVertexAttribArray(location);
-
+	*/
 
 	// copy the normal
 	location = glGetAttribLocation(sh.getProgId(), "normal");

@@ -21,8 +21,8 @@ public:
 
 	GLuint getProgId() const { return programId; }
 
-	OpStatus createShaderProgram(char * vShFilename, char * fShFilename);
-	OpStatus createShaderProgram(char * vShFilename, char * fShFilename, char * gShFilename);
+	OpStatus createShaderProgram(const char * vShFilename, const char * fShFilename);
+	//OpStatus createShaderProgram(char * vShFilename, char * fShFilename, char * gShFilename);
 
 	void printShaderStatus();
 	void useProgram(int useProg);
@@ -35,10 +35,10 @@ private:
 	GLuint programId;
 	GLuint vShId, fShId, gShId;
 
-	char * readCode(char * fname);
+	char * readCode(const char * fname);
 
-	OpStatus createShaderObject(char* fname, int type, GLuint * shaderId);
+	OpStatus createShaderObject(const char* fname, int type, GLuint * shaderId);
 	OpStatus createShaderProgram(GLint vSh, GLint fSh, GLuint * progId);
-	OpStatus createShaderProgram(GLint vSh, GLint fSh, GLint gSh, GLuint * progId);
+	//OpStatus createShaderProgram(GLint vSh, GLint fSh, GLint gSh, GLuint * progId);
 };
 
