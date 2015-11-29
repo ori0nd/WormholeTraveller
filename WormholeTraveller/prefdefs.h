@@ -12,7 +12,7 @@
 #define PREF_WINDOW_RATE		60	// Hz
 #define PREF_INIT_WPOS_X		100
 #define PREF_INIT_WPOS_Y		75
-#define PREF_GAME_MODE			true
+#define PREF_GAME_MODE			false
 #define PREF_GAME_MODE_W		1920
 #define PREF_GAME_MODE_H		1200
 #define PREF_GAME_MODE_RATE		60

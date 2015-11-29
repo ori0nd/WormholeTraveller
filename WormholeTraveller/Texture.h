@@ -4,9 +4,9 @@
 // Texture
 //
 
-#ifndef TEXTURE_H
-#define TEXTURE_H
+#pragma once
 
+#include <glew.h>
 #include <SOIL.h>
 #include <iostream>
 #include <string>
@@ -22,15 +22,14 @@ public:
 	Texture();
 	virtual ~Texture();
 
-	OpStatus loadTexture(const string& filename);
-	void bindToTextureUnit(int textureUnit);
-	void setTextureSampler(ShaderProgram& sh, const char * sampleName, GLuint samplerId);
+	virtual OpStatus loadTexture(const string& filename);
+	virtual void bindToTextureUnit(int textureUnit);
+	virtual void setTextureSampler(ShaderProgram& sh, const char * sampleName, GLuint samplerId);
 
-private:
+protected:
 
 	GLuint texId; // texture handle
 	int textureUnit; // tex. unit for the sampler
 
 };
 
-#endif /* TEXTURE_H */

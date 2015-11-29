@@ -60,16 +60,16 @@
     <ClInclude Include="LightingShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SkydomeShader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SkydomeTexture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="prefdefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyboxShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CubeMapTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -98,13 +98,13 @@
     <ClCompile Include="LightingShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SkydomeShader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SkydomeTexture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyboxShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CubeMapTexture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -138,12 +138,11 @@
     <None Include="Shaders\LightingShader.vert">
       <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="Shaders\Skydome.frag">
+    <None Include="Shaders\Skybox.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="Shaders\Skydome.vert">
+    <None Include="Shaders\Skybox.vert">
       <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

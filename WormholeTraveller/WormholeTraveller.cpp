@@ -58,7 +58,10 @@ OpStatus WormholeTraveller::initOpenGL()
 
 	glutTimerFunc(PREF_FRAME_TIME, WormholeTraveller::timerTickRouter, OP_UPDATE_OBJECTS);
 
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE);
+	glEnable(GL_MULTISAMPLE);
+	glutSetOption(GLUT_MULTISAMPLE, 16);
+
 	glewInit();
 
 	return OPS_OK;
@@ -83,33 +86,50 @@ OpStatus WormholeTraveller::initApplication()
 	vec3 viewerPos = vec3(-25, 0, 100);
 	vec3 lookAt = vec3(25, 0, 25);
 	vec3 up = vec3(0, 1, 0);
-	
 	camera.setWindowDims(mVpWidth, mVpHeight);
 	camera.setCamera(viewerPos, lookAt, up);
 
 	// Setup the shader program
 	OpStatus shaderStatus = lightingShader.init();
-
-	if (OPS_FAILURE(shaderStatus)) { return shaderStatus; }
-
-	lightingShader.useProgram(1);
+	if (OPS_FAILURE(shaderStatus)) { 
+		cerr << "Cannot initialize lighting shader" << endl;
+		return shaderStatus; 
+	}
+	
+	// Setup the skybox shader
+	shaderStatus = skyboxShader.init();
+	if (OPS_FAILURE(shaderStatus)) {
+		cerr << "Cannot initialize skybox shader" << endl;
+		return shaderStatus;
+	}
 
 	//// Create the world scene (i.e. objects)
 
 	vector<vec3> vertices, normals;
 	vector<vec2> uvs;
 
-	// Earth
-	OpAssert(SphereObject::loadOBJ(Preferences::getModelPath("earth.obj").c_str(), 
-		vertices, uvs, normals), "cannot load model: earth.DDS");
+	// Init skybox
+	OpAssert(initSkybox(), "Cannot initialize skybox mesh");
+	
+	OpAssert(skyboxTexture.loadCubeMap(
+		Preferences::getTexturePath("skybox_cubemap/right.png"),
+		Preferences::getTexturePath("skybox_cubemap/left.png"),
+		Preferences::getTexturePath("skybox_cubemap/top.png"),
+		Preferences::getTexturePath("skybox_cubemap/bottom.png"),
+		Preferences::getTexturePath("skybox_cubemap/front.png"),
+		Preferences::getTexturePath("skybox_cubemap/back.png")
+	), "Couldn't load cube map");
 
-	earth.createVao(lightingShader, vertices, uvs, normals);
+	skyboxTexture.setTextureSampler(skyboxShader, "texSampler1", 0);
+
+	OpAssert(SceneObject::loadOBJ(Preferences::getModelPath("earth.obj").c_str(),
+		vertices, uvs, normals), "cannot load model: earth.obj");
+
+	// Earth
+	earth.createVao(lightingShader, &vertices, &uvs, &normals);
 	earth.setInitialPosition(0, 0, 0);
 	earth.setInitialRotations(478, 0, 0);
 	earth.setScale(25, 25, 25);
-
-
-	vertices.clear(); normals.clear(); uvs.clear();
 
 	if (OPS_FAILURE(earthTexture.loadTexture(Preferences::getTexturePath("earth.DDS"))))
 	{
@@ -119,15 +139,11 @@ OpStatus WormholeTraveller::initApplication()
 	earthTexture.setTextureSampler(lightingShader, "texSampler1", 0);
 
 	// Moon
-	OpAssert(SphereObject::loadOBJ(Preferences::getModelPath("moon.obj").c_str(),
-		vertices, uvs, normals), "cannot load model: moon.DDS");
-
-	moon.createVao(lightingShader, vertices, uvs, normals);
-	moon.setInitialPosition(50, 0, 50);
+	moon.createVao(lightingShader, &vertices, &uvs, &normals);
+	moon.setInitialPosition(100, 10, 100);
 	moon.setInitialRotations(0, 0, 0);
 	moon.setScale(7, 7, 7);
 
-	vertices.clear(); normals.clear(); uvs.clear();
 
 	if (OPS_FAILURE(moonTexture.loadTexture(Preferences::getTexturePath("moon.DDS"))))
 	{
@@ -136,7 +152,69 @@ OpStatus WormholeTraveller::initApplication()
 
 	moonTexture.setTextureSampler(lightingShader, "texSampler1", 0);
 
+	// Earth wormhole
+	earthWormhole.createVao(lightingShader, &vertices, &uvs, &normals);
+	earthWormhole.setInitialPosition(0, 0, 0);
+	earthWormhole.setScale(2, 2, 2);
+
+	// Moon wormhole
+	moonWormhole.createVao(lightingShader, &vertices, &uvs, &normals);
+	moonWormhole.setInitialPosition(3.0f, 3.0f, 3.0f);
+	moonWormhole.setScale(1, 1, 1);
+
 	return OPS_OK;
+}
+
+OpStatus WormholeTraveller::initSkybox()
+{
+	vector<vec3> vertices;
+
+	// Skybox vertices
+	vertices.push_back(vec3(-10.0f, 10.0f, -10.0f));
+	vertices.push_back(vec3(-10.0f, -10.0f, -10.0f));
+	vertices.push_back(vec3(10.0f, -10.0f, -10.0f));
+	vertices.push_back(vec3(10.0f, -10.0f, -10.0f));
+	vertices.push_back(vec3(10.0f, 10.0f, -10.0f));
+	vertices.push_back(vec3(-10.0f, 10.0f, -10.0f));
+
+	vertices.push_back(vec3(-10.0f, -10.0f, 10.0));
+	vertices.push_back(vec3(-10.0f, -10.0f, -10.0f));
+	vertices.push_back(vec3(-10.0f, 10.0f, -10.0f));
+	vertices.push_back(vec3(-10.0f, 10.0f, -10.0f));
+	vertices.push_back(vec3(-10.0f, 10.0f, 10.0f));
+	vertices.push_back(vec3(-10.0f, -10.0f, 10.0f));
+
+	vertices.push_back(vec3(10.0f, -10.0f, -10.0f));
+	vertices.push_back(vec3(10.0f, -10.0f, 10.0f));
+	vertices.push_back(vec3(10.0f, 10.0f, 10.0f));
+	vertices.push_back(vec3(10.0f, 10.0f, 10.0f));
+	vertices.push_back(vec3(10.0f, 10.0f, -10.0f));
+	vertices.push_back(vec3(10.0f, -10.0f, -10.0f));
+
+
+	vertices.push_back(vec3(-10.0f, -10.0f, 10.0f));
+	vertices.push_back(vec3(-10.0f, 10.0f, 10.0f));
+	vertices.push_back(vec3(10.0f, 10.0f, 10.0f));
+	vertices.push_back(vec3(10.0f, 10.0f, 10.0f));
+	vertices.push_back(vec3(10.0f, -10.0f, 10.0f));
+	vertices.push_back(vec3(-10.0f, -10.0f, 10.0f));
+
+
+	vertices.push_back(vec3(-10.0f, 10.0f, -10.0f));
+	vertices.push_back(vec3(10.0f, 10.0f, -10.0f));
+	vertices.push_back(vec3(10.0f, 10.0f, 10.0f));
+	vertices.push_back(vec3(10.0f, 10.0f, 10.0f));
+	vertices.push_back(vec3(-10.0f, 10.0f, 10.0f));
+	vertices.push_back(vec3(-10.0f, 10.0f, -10.0f));
+
+	vertices.push_back(vec3(-10.0f, -10.0f, -10.0f));
+	vertices.push_back(vec3(-10.0f, -10.0f, 10.0f));
+	vertices.push_back(vec3(10.0f, -10.0f, -10.0f));
+	vertices.push_back(vec3(10.0f, -10.0f, -10.0f));
+	vertices.push_back(vec3(-10.0f, -10.0f, 10.0f));
+	vertices.push_back(vec3(10.0f, -10.0f, 10.0f));
+
+	return skybox.createVao(skyboxShader, &vertices);
 }
 
 void WormholeTraveller::setApplicationInstance(WormholeTraveller * instance)
@@ -220,14 +298,38 @@ void WormholeTraveller::render()
 	mat2.specular = vec3(0.8f, 0.8f, 0.8f);
 	mat2.shininess = 2.0f;
 
+	Material wormholeMaterial;
+	wormholeMaterial.diffuse = vec3(0.8f, 0.3f, 0.5f);
+	wormholeMaterial.specular = vec3(0.95f, 0.6f, 0.22f);
+	wormholeMaterial.shininess = 512.0f;
+
 	lightingShader.setLight(light);
+
+	lightingShader.useProgram(0);
 
 	glm::mat4 model, view, projection;
 
 	camera.getViewMatrix(&view);	// world -> eye
 	camera.getProjectionMatrix(&projection); // eye -> clip
 
+	// Draw skybox first
+	glDepthMask(GL_FALSE);
+	skyboxShader.useProgram(1);
+	skyboxTexture.bindToTextureUnit(GL_TEXTURE1);
+	skyboxShader.copyMatrixToShader(transpose(projection), "projection");
+	vec4 pos;
+	camera.getViewerPosition(&pos);
+	mat4 cameraView = view;
+	cameraView[0].w = 0.0f;
+	cameraView[1].w = 0.0f;
+	cameraView[2].w = 0.0f;
+	skyboxShader.copyMatrixToShader(cameraView, "view");
+	skybox.renderObject();
+	skyboxShader.useProgram(0);
+	glDepthMask(GL_TRUE);
+
 	// draw earth
+	lightingShader.useProgram(1);
 	lightingShader.setMaterial(mat1);
 
 	earthTexture.bindToTextureUnit(GL_TEXTURE0);
@@ -254,31 +356,23 @@ void WormholeTraveller::render()
 
 	moon.renderObject();
 
+	// earth wormhole
+	lightingShader.setMaterial(wormholeMaterial);
 
-	lightingShader.useProgram(0);
+	moonTexture.bindToTextureUnit(GL_TEXTURE0);
 
-	//skydomeShader.useProgram(1);
+	mat4 moonModel = model;
 
-	//GLint OldCullFaceMode;
-	//glGetIntegerv(GL_CULL_FACE_MODE, &OldCullFaceMode);
-	//GLint OldDepthFuncMode;
-	//glGetIntegerv(GL_DEPTH_FUNC, &OldDepthFuncMode);
+	// note: model is the moon's model
+	moonWormhole.getModelTransform(&model);
+	model = scale(model, vec3(0.25f, 0.25f, 0.25f));
+	mv = model * moonModel * view;
 
-	//glCullFace(GL_FRONT);
-	//glDepthFunc(GL_LEQUAL);
+	lightingShader.copyMatrixToShader(mv, "modelView");
+	lightingShader.copyMatrixToShader(view, "view");
+	lightingShader.copyMatrixToShader(glm::transpose(projection), "projection");
 
-	//skydomeSphere->getModelTransform(&model);
-	//mat4 mv = model * view; 
-
-	//skydomeShader.copyMatrixToShader(mv, "modelView");
-	//skydomeShader.copyMatrixToShader(transpose(projection), "projection");
-
-	//skydomeSphere->renderObject(skydomeShader);
-
-	//glCullFace(OldCullFaceMode);
-	//glDepthFunc(OldDepthFuncMode);
-
-	//skydomeShader.useProgram(0);
+	moonWormhole.renderObject();
 
 	glutSwapBuffers();
 }
@@ -451,13 +545,15 @@ OpStatus WormholeTraveller::updateWorldObjects(int frameNumber)
 	}
 
 	vec3 moonPos = moon.getPosition();
-	float angle = 0.007f;
+	float angle = 0.0007f;
 	float newX = moonPos.x * cos(angle) - moonPos.z * sin(angle);
 	float newZ = moonPos.x * sin(angle) + moonPos.z * cos(angle);
 	moon.setInitialPosition(vec3(newX, moonPos.y, newZ));
 
-	earth.incrementRotations(0.0f, 0.0f, 0.02f);
-	moon.incrementRotations(0.0f, 0.0f, 0.015f);
+	earth.incrementRotations(0.0f, 0.0f, 0.002f);
+	moon.incrementRotations(0.0f, 0.0f, 0.0015f);
+
+	//moonWormhole.incrementRotations(0.0f, 1.0f, 0.0f);
 
 	// Move forward for the value of current speed
 	prevFrameSpeed = travelSpeed;

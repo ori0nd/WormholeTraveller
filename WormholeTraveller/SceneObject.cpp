@@ -59,12 +59,12 @@ SceneObject::~SceneObject()
 //	return OPS_OK;
 //}
 
-OpStatus SceneObject::createVao(ShaderProgram & sh, vector<vec3> vertices, vector<vec2> uvs, vector<vec3> normals)
+OpStatus SceneObject::createVao(ShaderProgram & sh, vector<vec3> * vertices, vector<vec2> * uvs, vector<vec3> * normals)
 {
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
-	numVertices = vertices.size();
+	numVertices = vertices->size();
 
 	// delete below
 	GLint location;		// location of the attributes in the shader;
@@ -75,7 +75,7 @@ OpStatus SceneObject::createVao(ShaderProgram & sh, vector<vec3> vertices, vecto
 	//create vertex buffer object
 	glGenBuffers(1, &vtxVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, vtxVBO);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vec3), &vertices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices->size() * sizeof(vec3), &(vertices->at(0)), GL_STATIC_DRAW);
 
 	//copy the vertex position
 	location = glGetAttribLocation(sh.getProgId(), "position");
@@ -88,41 +88,52 @@ OpStatus SceneObject::createVao(ShaderProgram & sh, vector<vec3> vertices, vecto
 	glEnableVertexAttribArray(location);
 	glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
-	// create normals VBO
-	glGenBuffers(1, &normalsVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, normalsVBO);
-	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(vec3), &normals[0], GL_STATIC_DRAW);
+	if (normals != NULL && normals->size() > 0)
+	{
+		// create normals VBO
+		glGenBuffers(1, &normalsVBO);
+		glBindBuffer(GL_ARRAY_BUFFER, normalsVBO);
+		glBufferData(GL_ARRAY_BUFFER, normals->size() * sizeof(vec3), &(normals->at(0)), GL_STATIC_DRAW);
 
-	// copy the normal
-	location = glGetAttribLocation(sh.getProgId(), "normal");
+		// copy the normal
+		location = glGetAttribLocation(sh.getProgId(), "normal");
 
-	if (location == -1) {
-		cerr << "cannot find uniform: normal" << endl;
-		return OPS_UNIFORM_NOT_FOUND;
+		if (location == -1) {
+			cerr << "cannot find uniform: normal" << endl;
+			return OPS_UNIFORM_NOT_FOUND;
+		}
+
+		glEnableVertexAttribArray(location);
+		glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	}
 
-	glEnableVertexAttribArray(location);
-	glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	if (uvs != NULL && uvs->size() > 0)
+	{
+		// create uvs VBO
+		glGenBuffers(1, &uvsVBO);
+		glBindBuffer(GL_ARRAY_BUFFER, uvsVBO);
+		glBufferData(GL_ARRAY_BUFFER, uvs->size() * sizeof(vec2), &(uvs->at(0)), GL_STATIC_DRAW);
 
-	// create uvs VBO
-	glGenBuffers(1, &uvsVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, uvsVBO);
-	glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(vec2), &uvs[0], GL_STATIC_DRAW);
+		// copy the UV
+		location = glGetAttribLocation(sh.getProgId(), "uv");
 
-	// copy the UV
-	location = glGetAttribLocation(sh.getProgId(), "uv");
+		if (location == -1) {
+			cerr << "cannot find uniform: uv" << endl;
+			return OPS_UNIFORM_NOT_FOUND;
+		}
 
-	if (location == -1) {
-		cerr << "cannot find uniform: uv" << endl;
-		return OPS_UNIFORM_NOT_FOUND;
+		glEnableVertexAttribArray(location);
+		glVertexAttribPointer(location, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	}
-
-	glEnableVertexAttribArray(location);
-	glVertexAttribPointer(location, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 	//end creation
 	glBindVertexArray(0);
 	return OPS_OK;
+}
+
+OpStatus SceneObject::createVao(ShaderProgram & sh, vector<vec3> * vertices)
+{
+	return createVao(sh, vertices, NULL, NULL);
 }
 
 void SceneObject::getModelTransform(glm::mat4 * dest) const

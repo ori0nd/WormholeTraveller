@@ -22,10 +22,10 @@
 #include "SphereObject.h"
 
 #include "LightingShader.h"
-#include "SkydomeShader.h"
+#include "SkyboxShader.h"
 
 #include "Texture.h"
-#include "SkydomeTexture.h"
+#include "CubeMapTexture.h"
 
 #include "prefdefs.h"
 
@@ -67,11 +67,9 @@ private:
 	static WormholeTraveller* appinstance;
 
 	LightingShader lightingShader;
-	SkydomeShader skydomeShader;
+	SkyboxShader skyboxShader;
 
-	SkydomeTexture * skydomeTexture;
-
-	GLuint sampler;
+	CubeMapTexture skyboxTexture;
 
 	vector<GameState> states;
 	void WormholeTraveller::executeStateHandler(GameState state);
@@ -104,6 +102,7 @@ private:
 	void timerTick(int operation);
 
 	OpStatus updateWorldObjects(int frameNumber);
+	OpStatus initSkybox();
 
 	void changeTravelAcceleration(double delta);
 
@@ -114,12 +113,14 @@ private:
 
 	double accelerationUPF, decelerationUPF; // units per frame
 
-	GLbitfield usedBuffersBits;
-
 	SceneObject earth;
 	SceneObject moon;
+	SceneObject earthWormhole;
+	SceneObject moonWormhole;
+	SceneObject skybox;
 
 	Texture earthTexture;
 	Texture moonTexture;
+	Texture wormholeTexture;
 };
 

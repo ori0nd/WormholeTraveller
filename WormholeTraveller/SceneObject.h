@@ -31,7 +31,8 @@ public:
 	virtual ~SceneObject();
 
 	//OpStatus createVao(ShaderProgram& sh, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
-	OpStatus createVao(ShaderProgram& sh, vector<vec3> vertices, vector<vec2> uvs, vector<vec3> normals);
+	OpStatus createVao(ShaderProgram& sh, vector<vec3> * vertices, vector<vec2> * uvs, vector<vec3> * normals);
+	OpStatus createVao(ShaderProgram& sh, vector<vec3> * vertices);
 
 	virtual void getModelTransform(glm::mat4 * dest) const;
 	virtual void renderObject() const;
