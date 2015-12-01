@@ -31,7 +31,7 @@
 // Movement prefs (in units per second)
 #define PREF_ACCEL_UPS	0.005
 #define PREF_DECEL_UPS	(PREF_ACCEL_UPS * 5)
-#define PREF_TOP_SPEED	0.3
+#define PREF_TOP_SPEED	2.0
 #define PREF_TOP_SPEED_BACKW 0.15
 #define PREF_TOP_ACCEL	0.002
 #define PREF_ACCEL_CD_TRIGGER_SPEED 0.008

@@ -13,6 +13,8 @@
 #include <glew.h>
 #include <freeglut.h>
 
+#define GLM_SWIZZLE
+
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
@@ -105,6 +107,11 @@ private:
 	OpStatus initSkybox();
 
 	void changeTravelAcceleration(double delta);
+	void setGlobalScale(float newScale);
+
+	void performHyperjump(bool backwards);
+
+	float globalScale;
 
 	int mVpWidth, mVpHeight;
 	int mFramesRenderred;
@@ -118,9 +125,17 @@ private:
 	SceneObject earthWormhole;
 	SceneObject moonWormhole;
 	SceneObject skybox;
+	vector<SceneObject*> rulerBlocks;
+	float rulerBlockZScale;
+	int numBlocks = 100;
+
+	int earthMoonDistanceUnits;
 
 	Texture earthTexture;
 	Texture moonTexture;
 	Texture wormholeTexture;
+	Texture pathBlockTexture;
+
+	float distanceToWH1, distanceToWH2;
 };
 

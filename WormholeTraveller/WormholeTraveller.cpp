@@ -22,6 +22,43 @@ WormholeTraveller::~WormholeTraveller()
 {
 }
 
+//-------------------------------------------------------------------------
+//  Draws a string at the specified coordinates.
+//-------------------------------------------------------------------------
+void printw(float x, float y, float z, char* format, ...)
+{
+	va_list args;   //  Variable argument list
+	int len;        // String length
+	int i;          //  Iterator
+	char * text;    // Text
+
+					//  Initialize a variable argument list
+	va_start(args, format);
+
+	//  Return the number of characters in the string referenced the list of arguments.
+	// _vscprintf doesn't count terminating '\0' (that's why +1)
+	len = _vscprintf(format, args) + 1;
+
+	//  Allocate memory for a string of the specified size
+	text = (char*)malloc(len * sizeof(char));
+
+	//  Write formatted output using a pointer to the list of arguments
+	vsprintf_s(text, len, format, args);
+
+	//  End using variable argument list
+	va_end(args);
+
+	//  Specify the raster position for pixel operations.
+	glRasterPos3f(x, y, z);
+
+	//  Draw the characters one by one
+	for (i = 0; text[i] != '\0'; i++)
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10, text[i]);
+
+	//  Free the allocated memory for the string
+	free(text);
+}
+
 OpStatus WormholeTraveller::initOpenGL()
 {
 	glutInitWindowPosition(PREF_INIT_WPOS_X, PREF_INIT_WPOS_Y);
@@ -42,8 +79,10 @@ OpStatus WormholeTraveller::initOpenGL()
 		}
 	}
 
+	/*
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
+	*/
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -60,7 +99,7 @@ OpStatus WormholeTraveller::initOpenGL()
 
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE);
 	glEnable(GL_MULTISAMPLE);
-	glutSetOption(GLUT_MULTISAMPLE, 16);
+	glutSetOption(GLUT_MULTISAMPLE, 2);
 
 	glewInit();
 
@@ -122,14 +161,41 @@ OpStatus WormholeTraveller::initApplication()
 
 	skyboxTexture.setTextureSampler(skyboxShader, "texSampler1", 0);
 
+	// Surface
+	vertices.push_back(vec3(-0.5, -0.5, 0.0));
+	vertices.push_back(vec3(0.5, -0.5, 0.0));
+	vertices.push_back(vec3(0.5, 0.5, 0.0));
+
+	vertices.push_back(vec3(-0.5, -0.5, 0.0));
+	vertices.push_back(vec3(0.5, 0.5, 0.0));
+	vertices.push_back(vec3(-0.5, 0.5, 0.0));
+
+	rulerBlocks.resize(numBlocks);
+	for (int i = 0; i < 100; ++i)
+	{
+		rulerBlocks[i] = new SceneObject();
+		rulerBlocks[i]->createVao(lightingShader, &vertices);
+		rulerBlocks[i]->setInitialRotations(0.0, 3.1415/2, 0.0);
+	}
+
+	setGlobalScale(1.0f);
+
+	if (OPS_FAILURE(pathBlockTexture.loadTexture(Preferences::getTexturePath("scale.DDS"))))
+	{
+		return OPS_ERROR_LOAD_TEXTURE;
+	}
+
+	pathBlockTexture.setTextureSampler(lightingShader, "texSampler1", 0);
+
+	vertices.clear();
+
+	// Earth
 	OpAssert(SceneObject::loadOBJ(Preferences::getModelPath("earth.obj").c_str(),
 		vertices, uvs, normals), "cannot load model: earth.obj");
 
-	// Earth
 	earth.createVao(lightingShader, &vertices, &uvs, &normals);
 	earth.setInitialPosition(0, 0, 0);
-	earth.setInitialRotations(478, 0, 0);
-	earth.setScale(25, 25, 25);
+	earth.setInitialRotations(478, 0, 0); 
 
 	if (OPS_FAILURE(earthTexture.loadTexture(Preferences::getTexturePath("earth.DDS"))))
 	{
@@ -140,9 +206,7 @@ OpStatus WormholeTraveller::initApplication()
 
 	// Moon
 	moon.createVao(lightingShader, &vertices, &uvs, &normals);
-	moon.setInitialPosition(100, 10, 100);
 	moon.setInitialRotations(0, 0, 0);
-	moon.setScale(7, 7, 7);
 
 
 	if (OPS_FAILURE(moonTexture.loadTexture(Preferences::getTexturePath("moon.DDS"))))
@@ -154,13 +218,13 @@ OpStatus WormholeTraveller::initApplication()
 
 	// Earth wormhole
 	earthWormhole.createVao(lightingShader, &vertices, &uvs, &normals);
-	earthWormhole.setInitialPosition(0, 0, 0);
-	earthWormhole.setScale(2, 2, 2);
+	earthWormhole.setInitialPosition(3.0f, 3.0f, 3.0f);
+	earthWormhole.setScale(0.25f, 0.25f, 0.25f);
 
 	// Moon wormhole
 	moonWormhole.createVao(lightingShader, &vertices, &uvs, &normals);
 	moonWormhole.setInitialPosition(3.0f, 3.0f, 3.0f);
-	moonWormhole.setScale(1, 1, 1);
+	moonWormhole.setScale(0.25f, 0.25f, 0.25f);
 
 	return OPS_OK;
 }
@@ -298,6 +362,7 @@ void WormholeTraveller::render()
 	mat2.specular = vec3(0.8f, 0.8f, 0.8f);
 	mat2.shininess = 2.0f;
 
+
 	Material wormholeMaterial;
 	wormholeMaterial.diffuse = vec3(0.8f, 0.3f, 0.5f);
 	wormholeMaterial.specular = vec3(0.95f, 0.6f, 0.22f);
@@ -314,6 +379,7 @@ void WormholeTraveller::render()
 
 	// Draw skybox first
 	glDepthMask(GL_FALSE);
+
 	skyboxShader.useProgram(1);
 	skyboxTexture.bindToTextureUnit(GL_TEXTURE1);
 	skyboxShader.copyMatrixToShader(transpose(projection), "projection");
@@ -327,6 +393,7 @@ void WormholeTraveller::render()
 	skybox.renderObject();
 	skyboxShader.useProgram(0);
 	glDepthMask(GL_TRUE);
+
 
 	// draw earth
 	lightingShader.useProgram(1);
@@ -356,26 +423,52 @@ void WormholeTraveller::render()
 
 	moon.renderObject();
 
-	// earth wormhole
+	// Wormholes
 	lightingShader.setMaterial(wormholeMaterial);
-
 	moonTexture.bindToTextureUnit(GL_TEXTURE0);
 
-	mat4 moonModel = model;
+	mat4 moonModel;
+	mat4 earthModel;
 
-	// note: model is the moon's model
-	moonWormhole.getModelTransform(&model);
-	model = scale(model, vec3(0.25f, 0.25f, 0.25f));
-	mv = model * moonModel * view;
+	moon.getModelTransform(&moonModel);
+	earth.getModelTransform(&earthModel);
 
-	lightingShader.copyMatrixToShader(mv, "modelView");
 	lightingShader.copyMatrixToShader(view, "view");
 	lightingShader.copyMatrixToShader(glm::transpose(projection), "projection");
 
+	// note: model is the moon's model
+	moonWormhole.getModelTransform(&model);
+	mv = model * moonModel * view;
+	lightingShader.copyMatrixToShader(mv, "modelView");
 	moonWormhole.renderObject();
+	
+	earthWormhole.getModelTransform(&model);
+	mv = model * earthModel * view;
+	lightingShader.copyMatrixToShader(mv, "modelView");
+	earthWormhole.renderObject();
+
+	// path
+	pathBlockTexture.bindToTextureUnit(GL_TEXTURE0);
+
+	lightingShader.copyMatrixToShader(view, "view");
+	lightingShader.copyMatrixToShader(glm::transpose(projection), "projection");
+
+	for (int i = 0; i < 100; ++i)
+	{
+		rulerBlocks[i]->getModelTransform(&model);
+		mv = model * view;
+		
+		lightingShader.copyMatrixToShader(mv, "modelView");
+
+		rulerBlocks[i]->renderObject();
+	}
+
+	printw(0, 0, 50, "hi");
 
 	glutSwapBuffers();
 }
+
+
 
 void WormholeTraveller::onKeyboard(unsigned char key, int x, int y)
 {
@@ -409,8 +502,21 @@ void WormholeTraveller::onKeyboard(unsigned char key, int x, int y)
 		camera.moveRightRelative(4.0f);
 		break;
 
+	case 32:
+		// handbrake
+		travelSpeed = travelAcceleration = 0.0;
+		break;
+
+	case '+':
+		setGlobalScale(globalScale + 0.5f);
+		break;
+
+	case '-':
+		setGlobalScale(globalScale - 0.5f);
+		break;
 
 	default:
+		cout << "Unbound key: " << (int)key << endl;
 		break;
 
 	}
@@ -548,10 +654,10 @@ OpStatus WormholeTraveller::updateWorldObjects(int frameNumber)
 	float angle = 0.0007f;
 	float newX = moonPos.x * cos(angle) - moonPos.z * sin(angle);
 	float newZ = moonPos.x * sin(angle) + moonPos.z * cos(angle);
-	moon.setInitialPosition(vec3(newX, moonPos.y, newZ));
+	//moon.setInitialPosition(vec3(newX, moonPos.y, newZ));
 
-	earth.incrementRotations(0.0f, 0.0f, 0.002f);
-	moon.incrementRotations(0.0f, 0.0f, 0.0015f);
+	earth.incrementRotations(0.0f, 0.0f, 0.0002f);
+	moon.incrementRotations(0.0f, 0.0f, 0.00015f);
 
 	//moonWormhole.incrementRotations(0.0f, 1.0f, 0.0f);
 
@@ -559,7 +665,27 @@ OpStatus WormholeTraveller::updateWorldObjects(int frameNumber)
 	prevFrameSpeed = travelSpeed;
 	travelSpeed += travelAcceleration;
 	this->camera.moveForwardRelative(travelSpeed);
+
+	// Calculate distance to wormholes
+	vec4 eyePos;
+	camera.getViewerPosition(&eyePos);
+
+	mat4 model;
+
+	earth.getModelTransform(&model);
+	vec4 wh1Pos = vec4(earthWormhole.getPosition(), 1.0f) * model;
+
+	moon.getModelTransform(&model);
+	vec4 wh2Pos = vec4(moonWormhole.getPosition(), 1.0f) * model;
+
+	vec3 eye = eyePos.xyz;
 	
+	distanceToWH1 = length(wh1Pos.xyz - eye);
+	distanceToWH2 = length(wh2Pos.xyz - eye);
+	
+	if (distanceToWH1 < (1.1f * globalScale)) { performHyperjump(false); }
+	if (distanceToWH2 < (0.37f * globalScale)) { performHyperjump(true); }
+
 	// enumerate all possible states and execute its handler if enabled
 	for (int i = 0; i < GS_NUM_STATES; ++i)
 	{
@@ -687,4 +813,54 @@ void WormholeTraveller::changeTravelAcceleration(double delta)
 			
 		}
 	
+}
+
+void WormholeTraveller::setGlobalScale(float newScale)
+{
+	// Object scales
+	globalScale = newScale;
+	
+	earth.setScale(3.68f * globalScale, 3.68f * globalScale, 3.68f * globalScale);
+	moon.setScale(1.0f * globalScale, 1.0f * globalScale, 1.0f * globalScale);
+
+	int kilometersInUnit = 1737;
+	int earthMoonDistanceKm = 384400;
+
+	earthMoonDistanceUnits = (int)(earthMoonDistanceKm * globalScale) / kilometersInUnit;
+	cout << "Ruler length: " << earthMoonDistanceUnits << " units" << endl;
+	cout << "Kilometers in one unit: " << kilometersInUnit * globalScale << endl;
+
+	rulerBlockZScale = earthMoonDistanceUnits / ((float)numBlocks - 1);
+
+	moon.setInitialPosition(0.0f, 0.0f, earthMoonDistanceUnits);
+
+
+	float locationDeltaZ;
+	for (int i = 0; i < numBlocks; i++)
+	{
+		locationDeltaZ = rulerBlockZScale * (float)i + 0.5f;
+		rulerBlocks[i]->setInitialPosition(0, 0, locationDeltaZ);
+		rulerBlocks[i]->setScale(1.0f, 1.0f, 1.0f*rulerBlockZScale);
+	}
+}
+
+void WormholeTraveller::performHyperjump(bool backwards)
+{
+	mat4 model;
+	earth.getModelTransform(&model);
+	vec3 wh1Pos = (vec4(earthWormhole.getPosition(), 1.0f) * model).xyz;
+	wh1Pos += vec3(0.0, 1.5f * globalScale, 0.0);
+	moon.getModelTransform(&model);
+	vec3 wh2Pos = (vec4(moonWormhole.getPosition(), 1.0f) * model).xyz;
+	wh2Pos += vec3(0.0, 1.0f * globalScale, 0.0);
+	travelSpeed = travelAcceleration = 0;
+
+	if (backwards) {
+		camera.changeAbsPosition(wh1Pos.x, wh1Pos.y, wh1Pos.z);
+		cout << "Welcome home!" << endl;
+	}
+	else {
+		camera.changeAbsPosition(wh2Pos.x, wh2Pos.y, wh2Pos.z);
+		cout << "Welcome to Moon!" << endl;
+	}
 }

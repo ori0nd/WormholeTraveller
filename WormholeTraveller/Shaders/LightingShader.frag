@@ -67,5 +67,8 @@ void main()
 	vec3 diffuse = max(0.0, dot(N, L)) * light.diffuse * material.diffuse;
 	vec3 specular = pow(max(dot(R, V), 0.0), material.shininess) * light.specular * material.specular;
 
+
+	// world-space coordinates
+
 	color = texture2D(texSampler1, fs_in.texCoord) * vec4((diffuse + specular + light.ambient), 1.0f);
 }
