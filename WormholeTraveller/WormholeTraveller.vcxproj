@@ -22,14 +22,13 @@
     <ProjectGuid>{95B42EA1-F230-4C60-9496-248C1110F5B2}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>WormholeTraveller</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -71,7 +70,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\Build</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <CustomBuildAfterTargets>
     </CustomBuildAfterTargets>
     <RunCodeAnalysis>false</RunCodeAnalysis>
@@ -133,10 +132,13 @@ IF not exist "$(OutDir)textures\skybox_cubemap" (mkdir "$(OutDir)textures\skybox
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\Users\ori0n\gl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Users\ori0n\gl\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>freeglut.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -174,9 +176,6 @@ IF not exist "$(OutDir)textures\skybox_cubemap" (mkdir "$(OutDir)textures\skybox
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CubeMapTexture.h" />
     <ClInclude Include="GeometryCommon.h" />
@@ -190,6 +189,7 @@ IF not exist "$(OutDir)textures\skybox_cubemap" (mkdir "$(OutDir)textures\skybox
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="World.h" />
+    <ClInclude Include="WormholeShader.h" />
     <ClInclude Include="WormholeTraveller.h" />
   </ItemGroup>
   <ItemGroup>
@@ -208,6 +208,7 @@ IF not exist "$(OutDir)textures\skybox_cubemap" (mkdir "$(OutDir)textures\skybox
     </ClCompile>
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="World.cpp" />
+    <ClCompile Include="WormholeShader.cpp" />
     <ClCompile Include="WormholeTraveller.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -224,6 +225,8 @@ IF not exist "$(OutDir)textures\skybox_cubemap" (mkdir "$(OutDir)textures\skybox
     <None Include="Shaders\LightingShader.vert" />
     <None Include="Shaders\Skybox.frag" />
     <None Include="Shaders\Skybox.vert" />
+    <None Include="Shaders\Wormhole.frag" />
+    <None Include="Shaders\Wormhole.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

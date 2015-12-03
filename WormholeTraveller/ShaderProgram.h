@@ -9,10 +9,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <vector>
 
 #include "glew.h"
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/type_ptr.hpp"
+
+using namespace std;
+using namespace glm;
 
 class ShaderProgram
 {
@@ -27,7 +31,11 @@ public:
 
 	void printShaderStatus();
 	void useProgram(int useProg);
+
 	OpStatus copyMatrixToShader(const glm::mat4 matrix, const char* name);
+	OpStatus copyVectorToShader(const glm::vec3 vector, const char* name);
+	OpStatus copyVectorToShader(const glm::vec4 vector, const char* name);
+	OpStatus copyIntToShader(const int value, const char* name);
 
 	virtual OpStatus init() = 0;
 

@@ -61,6 +61,7 @@ SceneObject::~SceneObject()
 
 OpStatus SceneObject::createVao(ShaderProgram & sh, vector<vec3> * vertices, vector<vec2> * uvs, vector<vec3> * normals)
 {
+	sh.useProgram(1);
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 

@@ -14,8 +14,14 @@ ShaderProgram::~ShaderProgram()
 OpStatus ShaderProgram::createShaderProgram(const char * vShFilename, const char * fShFilename)
 {
 	OpStatus s;
+	int rc;
+
+	rc = glGetError();
 
 	s = createShaderObject(vShFilename, GL_VERTEX_SHADER, &vShId);
+
+	rc = glGetError();
+
 	if (OPS_FAILURE(s)) {
 		fprintf_s(stderr, "Cannot find shader source: %s\n", vShFilename);
 		return s;
@@ -27,7 +33,16 @@ OpStatus ShaderProgram::createShaderProgram(const char * vShFilename, const char
 		return s;
 	}
 
+	rc = glGetError();
+
 	s = createShaderProgram(vShId, fShId, &programId);
+
+	if (OPS_FAILURE(s)) {
+		std::cerr << " >>> ERROR CREATING SHADER!" << std::endl;
+	}
+
+	rc = glGetError();
+
 	return s;
 }
 
@@ -99,6 +114,45 @@ OpStatus ShaderProgram::copyMatrixToShader(const glm::mat4 matrix, const char * 
 	}
 
 	glUniformMatrix4fv(uniformLoc, 1, true, glm::value_ptr(matrix));
+	return OPS_OK;
+}
+
+OpStatus ShaderProgram::copyVectorToShader(const glm::vec3 vector, const char * name)
+{
+	int uniformLoc = glGetUniformLocation(programId, name);
+
+	if (uniformLoc == -1)
+	{
+		return OPS_UNIFORM_NOT_FOUND;
+	}
+
+	glUniform3f(uniformLoc, vector.x, vector.y, vector.z);
+	return OPS_OK;
+}
+
+OpStatus ShaderProgram::copyVectorToShader(const glm::vec4 vector, const char * name)
+{
+	int uniformLoc = glGetUniformLocation(programId, name);
+
+	if (uniformLoc == -1)
+	{
+		return OPS_UNIFORM_NOT_FOUND;
+	}
+
+	glUniform4f(uniformLoc, vector.x, vector.y, vector.z, vector.w);
+	return OPS_OK;
+}
+
+OpStatus ShaderProgram::copyIntToShader(const int value, const char * name)
+{
+	int uniformLoc = glGetUniformLocation(programId, name);
+
+	if (uniformLoc == -1)
+	{
+		return OPS_UNIFORM_NOT_FOUND;
+	}
+
+	glUniform1i(uniformLoc, value);
 	return OPS_OK;
 }
 
@@ -184,11 +238,28 @@ OpStatus ShaderProgram::createShaderProgram(GLint vSh, GLint fSh, GLuint * progI
 	int rc = 0;
 	// get a handle to the shader program
 	programId = glCreateProgram();
+
 	// connect the shaders subprogram to the "main" program
 	glAttachShader(programId, vSh);
 	rc = glGetError();
 	if (rc != GL_NO_ERROR) {
-		fprintf(stderr, "error while attaching vertex shader\n");
+		fprintf(stderr, "[CRITICALLLL!] error while attaching vertex shader\nCode: %d\n", rc);
+		
+
+			GLint status = GL_FALSE, len = 10;
+			if (glIsShader(programId))   glGetShaderiv(programId, GL_COMPILE_STATUS, &status);
+			if (glIsProgram(programId))  glGetProgramiv(programId, GL_LINK_STATUS, &status);
+			if (status == GL_TRUE) return OPS_NOK;
+			if (glIsShader(programId))   glGetShaderiv(programId, GL_INFO_LOG_LENGTH, &len);
+			if (glIsProgram(programId))  glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &len);
+			vector< char > log(len, 'X');
+			if (glIsShader(programId))   glGetShaderInfoLog(programId, len, NULL, &log[0]);
+			if (glIsProgram(programId))  glGetProgramInfoLog(programId, len, NULL, &log[0]);
+			cerr << &log[0] << endl;
+			exit(-1);
+		
+
+
 		return OPS_ERR_SHADER_ATTACH;
 	}
 

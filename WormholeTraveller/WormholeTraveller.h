@@ -6,14 +6,16 @@
 
 #pragma once
 
+#define _USE_MATH_DEFINES
+#define GLM_SWIZZLE
+
 #include <iostream>
 #include <vector>
 #include <string>
+#include <math.h>
 
 #include <glew.h>
 #include <freeglut.h>
-
-#define GLM_SWIZZLE
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
@@ -25,6 +27,7 @@
 
 #include "LightingShader.h"
 #include "SkyboxShader.h"
+#include "WormholeShader.h"
 
 #include "Texture.h"
 #include "CubeMapTexture.h"
@@ -68,8 +71,10 @@ public:
 private:
 	static WormholeTraveller* appinstance;
 
+	// Shader wrappers
 	LightingShader lightingShader;
 	SkyboxShader skyboxShader;
+	WormholeShader wormholeShader;
 
 	CubeMapTexture skyboxTexture;
 
@@ -104,7 +109,13 @@ private:
 	void timerTick(int operation);
 
 	OpStatus updateWorldObjects(int frameNumber);
-	OpStatus initSkybox();
+
+	OpStatus initSkyboxGeometry();
+	OpStatus initSkyboxTexture();
+	OpStatus initTextures();
+	OpStatus initShaders();
+	OpStatus initRuler();
+	OpStatus initLighting();
 
 	void changeTravelAcceleration(double delta);
 	void setGlobalScale(float newScale);
@@ -136,6 +147,9 @@ private:
 	Texture wormholeTexture;
 	Texture pathBlockTexture;
 
+	Material earthMaterial, moonMaterial;
+
 	float distanceToWH1, distanceToWH2;
+	void renderSkybox();
 };
 

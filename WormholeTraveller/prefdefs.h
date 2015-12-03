@@ -12,11 +12,11 @@
 #define PREF_WINDOW_RATE		60	// Hz
 #define PREF_INIT_WPOS_X		100
 #define PREF_INIT_WPOS_Y		75
-#define PREF_GAME_MODE			false
+#define PREF_GAME_MODE			true
 #define PREF_GAME_MODE_W		1920
 #define PREF_GAME_MODE_H		1200
 #define PREF_GAME_MODE_RATE		60
-#define PREF_WINDOW_TITLE		"Wormhole Traveller"
+#define PREF_WINDOW_TITLE		"Wormhole"
 
 /// MSAA Preferences
 #define PREF_MSAA_ENABLE		true
@@ -31,11 +31,11 @@
 // Movement prefs (in units per second)
 #define PREF_ACCEL_UPS	0.005
 #define PREF_DECEL_UPS	(PREF_ACCEL_UPS * 5)
-#define PREF_TOP_SPEED	2.0
+#define PREF_TOP_SPEED	0.30
 #define PREF_TOP_SPEED_BACKW 0.15
-#define PREF_TOP_ACCEL	0.002
+#define PREF_TOP_ACCEL	0.0002
 #define PREF_ACCEL_CD_TRIGGER_SPEED 0.008
-#define PREF_ACCEL_CD_DELAY 60
+#define PREF_ACCEL_CD_DELAY 45
 
 using namespace std;
 

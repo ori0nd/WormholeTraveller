@@ -27,7 +27,7 @@ struct Material
 	float shininess;
 };
 
-uniform sampler2D texSampler1;
+uniform sampler2D texSampler0;
 
 uniform DirectionalLight light;
 uniform Material material;
@@ -70,5 +70,5 @@ void main()
 
 	// world-space coordinates
 
-	color = texture2D(texSampler1, fs_in.texCoord) * vec4((diffuse + specular + light.ambient), 1.0f);
+	color = texture2D(texSampler0, fs_in.texCoord) * vec4((diffuse + specular + light.ambient), 1.0f);
 }

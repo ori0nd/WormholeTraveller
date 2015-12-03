@@ -6,9 +6,9 @@ in VS_OUT {
 
 out vec4 color;
 
-uniform samplerCube texSampler1;
+uniform samplerCube cubeSampler0;
 
 void main ()
 {
-	color = texture(texSampler1, fs_in.texCoord);
+	color = texture(cubeSampler0, fs_in.texCoord);
 }
