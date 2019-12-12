@@ -2,9 +2,9 @@
 
 #include <string>
 
-#define SHADERS_PATH			".\\renderprogs"
-#define TEXTURES_PATH			".\\textures"
-#define MODELS_PATH				".\\models"
+#define SHADERS_PATH			"renderprogs"
+#define TEXTURES_PATH			"textures"
+#define MODELS_PATH				"models"
 
 /// GLUT Window Preferences
 #define PREF_WINDOW_W			1280
@@ -12,9 +12,9 @@
 #define PREF_WINDOW_RATE		60	// Hz
 #define PREF_INIT_WPOS_X		100
 #define PREF_INIT_WPOS_Y		75
-#define PREF_GAME_MODE			true
-#define PREF_GAME_MODE_W		1920
-#define PREF_GAME_MODE_H		1200
+#define PREF_GAME_MODE			false
+#define PREF_GAME_MODE_W		1024
+#define PREF_GAME_MODE_H		768
 #define PREF_GAME_MODE_RATE		60
 #define PREF_WINDOW_TITLE		"Wormhole"
 
@@ -43,7 +43,11 @@ namespace Convenience {
 	// Convinience for loading resources
 	inline string concatPath(const char * firstComponent, const char * secondComponent) {
 		char buf[100];
+		#ifdef _WIN32
 		sprintf(buf, "%s\\%s", firstComponent, secondComponent);
+		#else
+		sprintf(buf, "%s/%s", firstComponent, secondComponent);
+		#endif
 		return string(buf);
 	}
 }

@@ -7,7 +7,7 @@
 #pragma once
 
 #define _USE_MATH_DEFINES
-#define GLM_SWIZZLE
+#define GLM_FORCE_SWIZZLE
 
 #include <iostream>
 #include <vector>
@@ -19,6 +19,8 @@
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
 
 #include "World.h"
 #include "Camera.h"

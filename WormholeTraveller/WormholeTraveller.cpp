@@ -437,7 +437,14 @@ void WormholeTraveller::render()
 	
 	vec4 eye;
 	camera.getViewerPosition(&eye);
-	wormholeShader.copyVectorToShader(eye.xyz(), "eyePositionWorld");
+
+	cout << "eye vec4: " << glm::to_string(eye) << endl;
+
+	vec3 eye3 = eye.xyz;
+
+	cout << "eye vec3: " << glm::to_string(eye3) << endl;
+
+	wormholeShader.copyVectorToShader(eye3, "eyePositionWorld");
 
 	moonWormhole.getModelTransform(&model);
 	mat4 orbitingModel = model * moonModel;

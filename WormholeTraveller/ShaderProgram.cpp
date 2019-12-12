@@ -122,7 +122,11 @@ OpStatus ShaderProgram::copyMatrixToShader(const glm::mat4 matrix, const char * 
 
 OpStatus ShaderProgram::copyVectorToShader(const glm::vec3 vector, const char * name)
 {
+	std::cout << "Copying vec3 into uniform " << name << " -- getting location..." << std::endl;
+
 	int uniformLoc = glGetUniformLocation(programId, name);
+
+	std::cout << "Got vec3 uniform " << name << " location: " << uniformLoc << std::endl;
 
 	if (uniformLoc == -1)
 	{
@@ -130,6 +134,9 @@ OpStatus ShaderProgram::copyVectorToShader(const glm::vec3 vector, const char * 
 	}
 
 	glUniform3f(uniformLoc, vector.x, vector.y, vector.z);
+
+	std::cout << "Copied vec3 value to uniform!" << std::endl;
+
 	return OPS_OK;
 }
 
@@ -137,12 +144,17 @@ OpStatus ShaderProgram::copyVectorToShader(const glm::vec4 vector, const char * 
 {
 	int uniformLoc = glGetUniformLocation(programId, name);
 
+	std::cout << "Got vec4 uniform " << name << " location: " << uniformLoc << std::endl;
+
 	if (uniformLoc == -1)
 	{
 		return OPS_UNIFORM_NOT_FOUND;
 	}
 
 	glUniform4f(uniformLoc, vector.x, vector.y, vector.z, vector.w);
+
+	std::cout << "Copied vec4 value to uniform!" << std::endl;
+
 	return OPS_OK;
 }
 

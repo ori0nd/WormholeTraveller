@@ -301,7 +301,7 @@ OpStatus SceneObject::loadOBJ(const char * path, std::vector<vec3>& out_vertices
 		vec3 normal = tmp_normals[normalIndex - 1];
 		out_normals.push_back(normal);
 	}
-
+ 
 	return OPS_OK;
 }
 

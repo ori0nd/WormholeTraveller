@@ -1,4 +1,4 @@
-#version 420 core
+#version 330 core
 
 layout (location = 6) in vec3 position;
 layout (location = 7) in vec3 normal;
