@@ -1,4 +1,7 @@
+#ifdef _WIN32
 #include "stdafx.h"
+#endif
+
 #include "SkyboxShader.h"
 
 SkyboxShader::SkyboxShader()

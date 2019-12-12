@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <glew.h>
-#include <SOIL.h>
+#include <GL/glew.h>
+#include <SOIL/SOIL.h>
 #include <iostream>
 #include <string>
 
@@ -32,4 +32,3 @@ protected:
 	int textureUnit; // tex. unit for the sampler
 
 };
-

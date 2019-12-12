@@ -4,9 +4,10 @@
 // main.cpp -- entry point
 //
 
-#pragma once
-
+#ifdef _WIN32
 #include "stdafx.h"
+#endif
+
 #include <iostream>
 
 #include "WormholeTraveller.h"

@@ -1,4 +1,7 @@
+#ifdef _WIN32
 #include "stdafx.h"
+#endif
+
 #include "Camera.h"
 
 Camera::Camera() : winWidth(1), winHeight(1), fov(CAM_DEFAULT_FOV)
@@ -51,13 +54,13 @@ glm::vec3 Camera::moveRightRelative(float numUnits)
 	// TODO: Investigate wether it's ok to truncate the `w`, or we need to divide xyz by w instead??
 	glm::vec3 rightVec = glm::normalize(glm::cross(glm::vec3(this->lookAtVector), glm::vec3(this->upVector)));
 	this->position += glm::vec4(rightVec * numUnits, 1.0f);
-	return this->position.xyz;
+	return this->position.xyz();
 }
 
 void Camera::setOrientation(glm::vec3 lookAtVector, glm::vec3 upVector)
 {
-	glm::vec3 lookAtPoint = lookAtVector.xyz + this->position.xyz;
-	this->setCamera(this->position.xyz, lookAtPoint, upVector);
+	glm::vec3 lookAtPoint = lookAtVector.xyz() + this->position.xyz();
+	this->setCamera(this->position.xyz(), lookAtPoint, upVector);
 }
 
 void Camera::setOrientation(glm::vec3 position, glm::vec3 lookAtPoint, glm::vec3 upVector)

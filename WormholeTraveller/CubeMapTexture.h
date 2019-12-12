@@ -7,7 +7,7 @@
 #pragma once
 
 #include <string>
-#include <SOIL.h>
+#include <SOIL/SOIL.h>
 
 #include "ShaderProgram.h"
 #include "Texture.h"
@@ -31,7 +31,7 @@ public:
 		const string & negZFname);
 
 	virtual void bindToTextureUnit(int textureUnit);
-	virtual void CubeMapTexture::setTextureSampler(ShaderProgram& sh, const char * samplerName, GLuint samplerId);
+	virtual void setTextureSampler(ShaderProgram& sh, const char * samplerName, GLuint samplerId);
 
 private:
 
@@ -39,4 +39,3 @@ private:
 	GLenum types[6];
 
 };
-

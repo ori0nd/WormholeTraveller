@@ -30,7 +30,6 @@ inline void __op_fail(OpStatus s, const char* message)
 {
 	fprintf(stderr, "FATAL ERROR (%h): ", s);
 	fprintf(stderr, message);
-	Sleep(12000); // TODO: REMOVE IT
 	exit(s);
 }
 

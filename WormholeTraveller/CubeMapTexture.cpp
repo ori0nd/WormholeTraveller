@@ -1,6 +1,8 @@
+#ifdef _WIN32
 #include "stdafx.h"
-#include "CubeMapTexture.h"
+#endif
 
+#include "CubeMapTexture.h"
 
 CubeMapTexture::CubeMapTexture()
 {
@@ -81,4 +83,3 @@ void CubeMapTexture::setTextureSampler(ShaderProgram& sh, const char * samplerNa
 	GLuint location = glGetUniformLocation(sh.getProgId(), samplerName);
 	glUniform1i(location, samplerId);
 }
-

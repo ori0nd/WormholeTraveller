@@ -1,13 +1,14 @@
+#ifdef _WIN32
 #include "stdafx.h"
-#include "SphereObject.h"
+#endif
 
+#include "SphereObject.h"
 
 SphereObject::SphereObject(int longs, int lats)
 {
 	longitudes = longs;
 	latitudes = lats;
 }
-
 
 SphereObject::~SphereObject()
 {

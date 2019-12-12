@@ -43,7 +43,7 @@ namespace Convenience {
 	// Convinience for loading resources
 	inline string concatPath(const char * firstComponent, const char * secondComponent) {
 		char buf[100];
-		sprintf_s(buf, "%s\\%s", firstComponent, secondComponent);
+		sprintf(buf, "%s\\%s", firstComponent, secondComponent);
 		return string(buf);
 	}
 }

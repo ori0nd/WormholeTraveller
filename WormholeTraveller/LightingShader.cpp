@@ -1,4 +1,7 @@
+#ifdef _WIN32
 #include "stdafx.h"
+#endif
+
 #include "LightingShader.h"
 
 using namespace glm;
@@ -51,4 +54,3 @@ GLuint LightingShader::getTexSampler()
 {
 	return uSampler;
 }
-

@@ -11,9 +11,11 @@
 #include <iostream>
 #include <vector>
 
-#include "glew.h"
-#include "glm/mat4x4.hpp"
-#include "glm/gtc/type_ptr.hpp"
+#include <GL/glew.h>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+#include "opstatus.h"
 
 using namespace std;
 using namespace glm;
@@ -50,4 +52,3 @@ private:
 	OpStatus createShaderProgram(GLint vSh, GLint fSh, GLuint * progId);
 	//OpStatus createShaderProgram(GLint vSh, GLint fSh, GLint gSh, GLuint * progId);
 };
-

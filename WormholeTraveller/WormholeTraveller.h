@@ -14,8 +14,8 @@
 #include <string>
 #include <math.h>
 
-#include <glew.h>
-#include <freeglut.h>
+#include <GL/glew.h>
+#include <GL/freeglut.h>
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
@@ -79,7 +79,7 @@ private:
 	CubeMapTexture skyboxTexture;
 
 	vector<GameState> states;
-	void WormholeTraveller::executeStateHandler(GameState state);
+	void executeStateHandler(GameState state);
 
 	double travelSpeed;
 	double travelAcceleration;
@@ -152,4 +152,3 @@ private:
 	float distanceToWH1, distanceToWH2;
 	void renderSkybox();
 };
-

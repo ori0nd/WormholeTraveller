@@ -10,7 +10,7 @@
 #include <iostream>
 #include <stddef.h>
 
-#include <glew.h>
+#include <GL/glew.h>
 #include <glm/mat4x4.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -63,10 +63,8 @@ protected:
 	float yawAngle;		// rotation around the y-axis
 	glm::vec3 position;
 	glm::vec3 scale;
-	//int numIndices;
+	int numIndices;
 	int numVertices;
 
-	//static void computeNormals(const std::vector<unsigned int>& indices, std::vector<Vertex>& vertices);
-
+	static void computeNormals(const std::vector<unsigned int>& indices, std::vector<Vertex>& vertices);
 };
-

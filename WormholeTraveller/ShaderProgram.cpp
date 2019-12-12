@@ -1,4 +1,7 @@
+#ifdef _WIN32
 #include "stdafx.h"
+#endif
+
 #include "ShaderProgram.h"
 
 
@@ -23,13 +26,13 @@ OpStatus ShaderProgram::createShaderProgram(const char * vShFilename, const char
 	rc = glGetError();
 
 	if (OPS_FAILURE(s)) {
-		fprintf_s(stderr, "Cannot find shader source: %s\n", vShFilename);
+		fprintf(stderr, "Cannot find shader source: %s\n", vShFilename);
 		return s;
 	}
 
 	s = createShaderObject(fShFilename, GL_FRAGMENT_SHADER, &fShId);
 	if (OPS_FAILURE(s)) {
-		fprintf_s(stderr, "Cannot find shader source: %s\n", fShFilename);
+		fprintf(stderr, "Cannot find shader source: %s\n", fShFilename);
 		return s;
 	}
 
@@ -164,7 +167,7 @@ char * ShaderProgram::readCode(const char * fname)
 
 	// check for error in file name
 
-	fopen_s(&fp, fname, "r");	// open file and check for errors
+	fp = fopen(fname, "r");	// open file and check for errors
 	if (fp == NULL) { return NULL; }
 
 	// fine the length of code

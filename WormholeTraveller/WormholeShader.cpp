@@ -1,6 +1,8 @@
+#ifdef _WIN32
 #include "stdafx.h"
-#include "WormholeShader.h"
+#endif
 
+#include "WormholeShader.h"
 
 WormholeShader::WormholeShader()
 {
@@ -24,5 +26,3 @@ GLuint WormholeShader::getTexSampler()
 {
 	return uSampler;
 }
-
-

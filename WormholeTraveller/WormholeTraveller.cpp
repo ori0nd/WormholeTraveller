@@ -1,4 +1,6 @@
+#ifdef _WIN32
 #include "stdafx.h"
+#endif
 #include "WormholeTraveller.h"
 
 WormholeTraveller * WormholeTraveller::appinstance = NULL;
@@ -31,7 +33,7 @@ OpStatus WormholeTraveller::initOpenGL()
 	if (PREF_GAME_MODE)
 	{
 		char modeString[20];
-		sprintf_s(modeString, "%dx%d@%d", PREF_GAME_MODE_W, PREF_GAME_MODE_H, PREF_GAME_MODE_RATE);
+		sprintf(modeString, "%dx%d@%d", PREF_GAME_MODE_W, PREF_GAME_MODE_H, PREF_GAME_MODE_RATE);
 		glutGameModeString(modeString);
 		if (glutGameModeGet(GLUT_GAME_MODE_POSSIBLE))
 		{
@@ -435,7 +437,7 @@ void WormholeTraveller::render()
 	
 	vec4 eye;
 	camera.getViewerPosition(&eye);
-	wormholeShader.copyVectorToShader(eye.xyz, "eyePositionWorld");
+	wormholeShader.copyVectorToShader(eye.xyz(), "eyePositionWorld");
 
 	moonWormhole.getModelTransform(&model);
 	mat4 orbitingModel = model * moonModel;
@@ -684,10 +686,10 @@ OpStatus WormholeTraveller::updateWorldObjects(int frameNumber)
 	moon.getModelTransform(&model);
 	vec4 wh2Pos = vec4(moonWormhole.getPosition(), 1.0f) * model;
 
-	vec3 eye = eyePos.xyz;
+	vec3 eye = eyePos.xyz();
 
-	distanceToWH1 = length(wh1Pos.xyz - eye);
-	distanceToWH2 = length(wh2Pos.xyz - eye);
+	distanceToWH1 = length(wh1Pos.xyz() - eye);
+	distanceToWH2 = length(wh2Pos.xyz() - eye);
 
 	if (distanceToWH1 < (1.1f * globalScale)) { performHyperjump(false); }
 	if (distanceToWH2 < (0.37f * globalScale)) { performHyperjump(true); }
@@ -707,7 +709,7 @@ OpStatus WormholeTraveller::updateWorldObjects(int frameNumber)
 
 void WormholeTraveller::executeStateHandler(GameState state)
 {
-	boolean reverse;
+	bool reverse;
 	double delta;
 
 	switch (state)
@@ -854,10 +856,10 @@ void WormholeTraveller::performHyperjump(bool backwards)
 {
 	mat4 model;
 	earth.getModelTransform(&model);
-	vec3 wh1Pos = (vec4(earthWormhole.getPosition(), 1.0f) * model).xyz;
+	vec3 wh1Pos = (vec4(earthWormhole.getPosition(), 1.0f) * model).xyz();
 	wh1Pos += vec3(0.0, 1.5f * globalScale, 0.0);
 	moon.getModelTransform(&model);
-	vec3 wh2Pos = (vec4(moonWormhole.getPosition(), 1.0f) * model).xyz;
+	vec3 wh2Pos = (vec4(moonWormhole.getPosition(), 1.0f) * model).xyz();
 	wh2Pos += vec3(0.0, 1.0f * globalScale, 0.0);
 
 
